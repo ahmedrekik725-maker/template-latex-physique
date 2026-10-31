@@ -8,7 +8,7 @@ Un aide-mémoire d'une page de toutes les commandes : **`aide-memoire.pdf`**.
 > **assignments**, **lab reports** and **numerical-simulation reports** (Python → CSV → PDF),
 > with Libertinus fonts, a consistent title banner, theorem/exercise environments and one-command
 > compilation (`latexmk`). Pick a template below, edit the `\docsetup{…}` block, press compile.
-> Licensed under MIT (the faculty logo is excluded, see `LICENSE`). If you use it, please cite it
+> Licensed under MIT (the faculty logo is excluded, see `NOTICE.md`). If you use it, please cite it
 > (see `CITATION.cff`).
 
 ## Aperçu / Preview
