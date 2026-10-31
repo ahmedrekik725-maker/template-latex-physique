@@ -1,0 +1,282 @@
+% !TeX encoding = UTF-8
+%% =====================================================================
+%%  style/macros.tex — Commandes et environnements personnels.
+%%
+%%  RÈGLE : toutes les commandes sont créées avec \NewDocumentCommand,
+%%  \DeclarePairedDelimiter, \DeclareMathOperator ou \newtheorem, qui
+%%  produisent une ERREUR si le nom existe déjà. Aucune commande LaTeX,
+%%  AMS ou unicode-math n'est donc redéfinie en silence.
+%%  physics / physics2 ne sont PAS chargés (ils redéfinissent de nombreux
+%%  noms usuels) : les commandes utiles sont fournies explicitement ici.
+%%
+%%  SOMMAIRE
+%%    1. Notations mathématiques et physiques
+%%    2. Environnements de type théorème (définition, théorème, …)
+%%    3. Démonstration et fin de démonstration
+%%    4. Exercices, questions, solutions
+%%    5. Blocs de compte rendu de TP (objectif, principe, protocole, …)
+%%    6. Divers (résumé, incertitudes)
+%% =====================================================================
+
+%% ---------------------------------------------------------------------
+%%  1. NOTATIONS MATHÉMATIQUES ET PHYSIQUES
+%%     Convention typographique (proche de ISO 80000-2) :
+%%       grandeurs scalaires ........ italique            a, E, \omega
+%%       vecteurs ................... gras droit         \vect{v}
+%%       vecteurs unitaires ......... gras droit + ^     \uvect{e}
+%%       matrices ................... gras droit          \mat{A}
+%%       tenseurs ................... gras sans empatt.   \tens{T}
+%%       opérateurs quantiques ...... italique + chapeau  \op{H}
+%%       constantes i, e, d ......... droit               \ii  \ee  \dd
+%% ---------------------------------------------------------------------
+
+% --- Constantes mathématiques droites -------------------------------
+\NewDocumentCommand{\ii}{}{\symup{i}}       % unité imaginaire
+\NewDocumentCommand{\ee}{}{\symup{e}}       % base de l'exponentielle : \ee^{-x}
+\NewDocumentCommand{\dd}{}{\symup{d}}       % différentielle : \int f \dd x
+
+% --- Ensembles de nombres -------------------------------------------
+\NewDocumentCommand{\RR}{}{\symbb{R}}
+\NewDocumentCommand{\CC}{}{\symbb{C}}
+\NewDocumentCommand{\NN}{}{\symbb{N}}
+\NewDocumentCommand{\ZZ}{}{\symbb{Z}}
+\NewDocumentCommand{\QQ}{}{\symbb{Q}}
+
+% --- Vecteurs, matrices, tenseurs, opérateurs -----------------------
+\NewDocumentCommand{\vect}{m}{\symbf{#1}}                  % \vect{v}, \vect{\omega}
+\NewDocumentCommand{\uvect}{m}{\hat{\symbf{#1}}}           % \uvect{n}
+\NewDocumentCommand{\ex}{}{\uvect{e}_{x}}                 % vecteurs de base
+\NewDocumentCommand{\ey}{}{\uvect{e}_{y}}
+\NewDocumentCommand{\ez}{}{\uvect{e}_{z}}
+\NewDocumentCommand{\er}{}{\uvect{e}_{r}}
+\NewDocumentCommand{\etheta}{}{\uvect{e}_{\theta}}
+\NewDocumentCommand{\ephi}{}{\uvect{e}_{\varphi}}
+\NewDocumentCommand{\mat}{m}{\symbfup{#1}}                % \mat{A}
+\NewDocumentCommand{\tens}{m}{\symbfsfit{#1}}             % \tens{T}_{ij}
+\NewDocumentCommand{\op}{m}{\hat{#1}}                     % \op{H}, \op{x}
+\NewDocumentCommand{\adj}{}{^{\dagger}}                   % adjoint : \op{a}\adj
+\NewDocumentCommand{\cc}{}{^{*}}                          % conjugué complexe : z\cc
+\NewDocumentCommand{\hc}{}{\text{h.c.}}                   % « hermitien conjugué »
+\NewDocumentCommand{\transpose}{}{^{\mathsf{T}}}          % transposée : \mat{A}\transpose
+
+% --- Fonctions et opérateurs usuels ---------------------------------
+\DeclareMathOperator{\Tr}{Tr}
+\DeclareMathOperator{\sgn}{sgn}
+\DeclareMathOperator{\diag}{diag}
+\DeclareMathOperator{\Reel}{Re}                           % \Reel z (partie réelle)
+\DeclareMathOperator{\Imag}{Im}                           % \Imag z (partie imaginaire)
+\NewDocumentCommand{\bigO}{m}{\symcal{O}{\left(#1\right)}}           % \bigO{x^2}
+
+% --- Dérivées -------------------------------------------------------
+%   \dv{f}{x}  \dv[2]{f}{x}            dérivée ordinaire d'ordre n (défaut 1)
+%   \pdv{f}{x} \pdv[2]{f}{x}           dérivée partielle d'ordre n
+%   \pdv{f}{x}{y}                      dérivée partielle croisée
+%   \fdv{S}{q}                         dérivée fonctionnelle
+\NewDocumentCommand{\dv}{O{1} m m}{%
+  \frac{\dd\ifnum#1>1 ^{#1}\fi #2}{\dd #3\ifnum#1>1 ^{#1}\fi}}
+\NewDocumentCommand{\pdv}{O{1} m m g}{%
+  \IfNoValueTF{#4}
+    {\frac{\partial\ifnum#1>1 ^{#1}\fi #2}{\partial #3\ifnum#1>1 ^{#1}\fi}}
+    {\frac{\partial^{2} #2}{\partial #3\,\partial #4}}}
+\NewDocumentCommand{\fdv}{m m}{\frac{\delta #1}{\delta #2}}
+
+% --- Opérateurs différentiels (opérateur nabla en gras) -------------
+%   \grad f     \diverg\vect{E}     \curl\vect{B}     \lapl f
+\NewDocumentCommand{\grad}{}{\symbf{\nabla}}
+\NewDocumentCommand{\diverg}{}{\symbf{\nabla}\cdot}
+\NewDocumentCommand{\curl}{}{\symbf{\nabla}\times}
+\NewDocumentCommand{\lapl}{}{\nabla^{2}}
+
+% --- Produits, normes, valeurs absolues -----------------------------
+%   Toutes les paires de délimiteurs acceptent une taille explicite
+%   \abs[\big]{x}, ou la taille automatique \abs*{\frac{a}{b}}.
+\NewDocumentCommand{\dotp}{}{\mathbin{\cdot}}            % \vect{a}\dotp\vect{b}
+\NewDocumentCommand{\crossp}{}{\mathbin{\times}}         % \vect{a}\crossp\vect{b}
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
+\DeclarePairedDelimiter{\norm}{\lVert}{\rVert}
+\DeclarePairedDelimiterX{\pscal}[2]{\langle}{\rangle}{#1,#2}   % produit scalaire ⟨a,b⟩
+
+% --- Commutateurs, anticommutateurs, crochets de Poisson ------------
+\DeclarePairedDelimiterX{\comm}[2]{\lbrack}{\rbrack}{#1,#2}    % [A,B]
+\DeclarePairedDelimiterX{\acomm}[2]{\lbrace}{\rbrace}{#1,#2}   % {A,B}
+\DeclarePairedDelimiterX{\poisson}[2]{\lbrace}{\rbrace}{#1,#2}  % {f,g}_P (usage mécanique)
+
+% --- Notation de Dirac, valeurs moyennes, éléments de matrice -------
+\DeclarePairedDelimiter{\ket}{\lvert}{\rangle}                         % |ψ⟩
+\DeclarePairedDelimiter{\bra}{\langle}{\rvert}                         % ⟨ψ|
+\DeclarePairedDelimiterX{\braket}[2]{\langle}{\rangle}{#1\delimsize\vert#2}   % ⟨φ|ψ⟩
+\DeclarePairedDelimiterX{\ketbra}[2]{\lvert}{\rvert}{#1\delimsize\rangle\delimsize\langle#2} % |φ⟩⟨ψ|
+\DeclarePairedDelimiterX{\mel}[3]{\langle}{\rangle}{#1\delimsize\vert#2\delimsize\vert#3}    % ⟨m|A|n⟩
+\DeclarePairedDelimiter{\mean}{\langle}{\rangle}                       % ⟨x⟩ (moyenne quelconque)
+\DeclarePairedDelimiterX{\evstate}[2]{\langle}{\rangle}{#2\delimsize\vert#1\delimsize\vert#2}
+%   \ev{A}       → ⟨A⟩            (valeur moyenne)
+%   \ev{A}{\psi} → ⟨ψ|A|ψ⟩       (espérance de A dans l'état ψ)
+%   \ev*{…}{…}  → délimiteurs de taille automatique
+\NewDocumentCommand{\ev}{s m g}{%
+  \IfNoValueTF{#3}
+    {\IfBooleanTF{#1}{\mean*{#2}}{\mean{#2}}}
+    {\IfBooleanTF{#1}{\evstate*{#2}{#3}}{\evstate{#2}{#3}}}}
+
+% --- Incertitudes de mesure -----------------------------------------
+\NewDocumentCommand{\incert}{m}{u\mathopen{}\left(#1\right)}         % u(g)
+\NewDocumentCommand{\incertrel}{m}{\frac{u\mathopen{}\left(#1\right)}{#1}}  % u(g)/g
+\NewDocumentCommand{\ecartnorm}{m m}{%                                % écart normalisé
+  \frac{\abs{#1-#2}}{\sqrt{u^{2}\mathopen{}\left(#1\right)+u^{2}\mathopen{}\left(#2\right)}}}
+%   \qtyerr{9.81}{0.05}{\metre\per\second\squared} → (9,81 ± 0,05) m·s⁻²
+\NewDocumentCommand{\qtyerr}{m m m}{\qty{#1 +- #2}{#3}}
+
+%% ---------------------------------------------------------------------
+%%  2. ENVIRONNEMENTS DE TYPE THÉORÈME (sobres : pas de boîtes)
+%%     Titre en sans empattement bleu marine, filets absents.
+%%     Chaque environnement accepte un titre optionnel :
+%%        \begin{theoreme}[Inégalité de Cauchy–Schwarz] … \end{theoreme}
+%%     Définition, théorème, lemme, proposition, corollaire partagent un
+%%     même compteur (numérotation par section : 1.1, 1.2, …).
+%% ---------------------------------------------------------------------
+\newtheoremstyle{acadplain}                 % énoncés en italique
+  {0.9\baselineskip plus 2pt minus 2pt}{0.7\baselineskip plus 2pt minus 2pt}
+  {\itshape}{0pt}
+  {\sffamily\bfseries\color{TextColor}}{.}
+  {0.6em}
+  {\thmname{#1}\thmnumber{ #2}\thmnote{ {\normalfont\color{TextColor}(#3)}}}
+
+\newtheoremstyle{acaddef}                   % énoncés en romain
+  {0.9\baselineskip plus 2pt minus 2pt}{0.7\baselineskip plus 2pt minus 2pt}
+  {\normalfont}{0pt}
+  {\sffamily\bfseries\color{TextColor}}{.}
+  {0.6em}
+  {\thmname{#1}\thmnumber{ #2}\thmnote{ {\normalfont\color{TextColor}(#3)}}}
+
+\newtheoremstyle{acadremark}                % remarques, exemples : titre en italique
+  {0.7\baselineskip plus 2pt minus 2pt}{0.6\baselineskip plus 2pt minus 2pt}
+  {\normalfont}{0pt}
+  {\itshape\color{AccentColor}}{.}
+  {0.6em}
+  {\thmname{#1}\thmnumber{ #2}\thmnote{ {\upshape\color{TextColor}(#3)}}}
+
+\theoremstyle{acadplain}
+\newtheorem{theoreme}{Théorème}[section]
+\newtheorem{lemme}[theoreme]{Lemme}
+\newtheorem{proposition}[theoreme]{Proposition}
+\newtheorem{corollaire}[theoreme]{Corollaire}
+\theoremstyle{acaddef}
+\newtheorem{definition}[theoreme]{Définition}
+\theoremstyle{acadremark}
+\newtheorem{remarque}{Remarque}[section]
+\newtheorem{exemple}{Exemple}[section]
+\newtheorem*{note}{Note}                    % remarque non numérotée (ex. avant la section 1)
+
+%% ---------------------------------------------------------------------
+%%  3. DÉMONSTRATION ET SYMBOLE DE FIN
+%%     \begin{demonstration} … \end{demonstration}  (alias de « proof »)
+%%     Dans une équation finale : \qedhere
+%% ---------------------------------------------------------------------
+\addto\captionsfrench{\def\proofname{Démonstration}}
+\renewcommand{\qedsymbol}{%
+  {\color{MutedColor}\fboxsep=0pt \fboxrule=0.4pt
+   \fbox{\rule{0pt}{0.62em}\rule{0.62em}{0pt}}}}
+\makeatletter
+\renewenvironment{proof}[1][\proofname]{%
+  \par\pushQED{\qed}\normalfont
+  \topsep=0.7\baselineskip plus 2pt minus 2pt \relax
+  \trivlist\item[\hskip\labelsep{\itshape\color{AccentColor}#1.}]\ignorespaces
+}{\popQED\endtrivlist\@endpefalse}
+\makeatother
+\let\demonstration\proof
+\let\enddemonstration\endproof
+
+%% ---------------------------------------------------------------------
+%%  4. EXERCICES, QUESTIONS, SOLUTIONS
+%%     L'énoncé (exercice/question) est composé en noir, avec un titre
+%%     bleu marine ; la solution est repérable à son filet gris vertical.
+%%        \begin{exercice}[Titre] … \end{exercice}
+%%        \begin{question}[points] … \end{question}       (Question 1.1, 1.2…)
+%%        \begin{solution} … \end{solution}
+%% ---------------------------------------------------------------------
+\newtheoremstyle{acadexo}
+  {1.3\baselineskip plus 3pt minus 2pt}{0.5\baselineskip plus 2pt minus 2pt}
+  {\normalfont}{0pt}
+  {\sffamily\bfseries\large\color{TextColor}}{.}
+  {0.5em}
+  {\thmname{#1}\thmnumber{ #2}\thmnote{ \textemdash\ {\normalfont\bfseries\color{TextColor}#3}}}
+\newtheoremstyle{acadquestion}
+  {0.9\baselineskip plus 2pt minus 2pt}{0.4\baselineskip plus 2pt minus 2pt}
+  {\normalfont}{0pt}
+  {\sffamily\bfseries\color{TextColor}}{.}
+  {0.6em}
+  {\thmname{#1}\thmnumber{ #2}\thmnote{ {\normalfont\sffamily\footnotesize\color{MutedColor}[#3]}}}
+\theoremstyle{acadexo}
+\newtheorem{exercice}{Exercice}
+\theoremstyle{acadquestion}
+\newtheorem{question}{Question}[exercice]
+
+\NewDocumentEnvironment{solution}{O{Solution}}{%
+  \par\addvspace{0.2\baselineskip}%
+  \def\FrameCommand{\hspace{0.3em}{\color{RuleColor}\vrule width 0.9pt}\hspace{0.9em}}%
+  \MakeFramed{\advance\hsize-\width \FrameRestore}%
+  \noindent{\itshape\color{TextColor}#1.}\enspace\ignorespaces
+}{%
+  \par\endMakeFramed\par\addvspace{0.4\baselineskip}}
+
+%% ---------------------------------------------------------------------
+%%  5. BLOCS DE COMPTE RENDU DE TP
+%%     Chaque bloc ouvre une VRAIE section numérotée (présente dans la
+%%     table des matières, référençable avec \label juste après \begin).
+%%        \begin{objectif} … \end{objectif}
+%%        \begin{objectif}[Autre titre] … \end{objectif}   titre modifié
+%%        \begin{objectif*} … \end{objectif*}              section non numérotée
+%% ---------------------------------------------------------------------
+\NewDocumentCommand{\DeclareTPBlock}{m m}{%
+  \NewDocumentEnvironment{#1}{o}{\section{\IfNoValueTF{##1}{#2}{##1}}}{\par}%
+  \NewDocumentEnvironment{#1*}{o}{\section*{\IfNoValueTF{##1}{#2}{##1}}}{\par}}
+\DeclareTPBlock{objectif}{Objectif}
+\DeclareTPBlock{materiel}{Matériel}
+\DeclareTPBlock{principe}{Principe théorique}
+\DeclareTPBlock{protocole}{Protocole expérimental}
+\DeclareTPBlock{resultats}{Résultats expérimentaux}
+\DeclareTPBlock{analyse}{Analyse et discussion}
+\DeclareTPBlock{conclusion}{Conclusion}
+% Blocs pour un compte rendu de SIMULATION NUMÉRIQUE (type = simulation)
+\DeclareTPBlock{modele}{Modèle physique}
+\DeclareTPBlock{methode}{Méthode numérique}
+\DeclareTPBlock{implementation}{Implémentation}
+\DeclareTPBlock{validation}{Validation et convergence}
+
+%% ---------------------------------------------------------------------
+%%  5 bis. CODE SOURCE (coloration syntaxique par langage, via piton)
+%%     \codefile[options]{Langage}{fichier}{Légende}{étiquette}
+%%       Langage : Python | C | Matlab | OCaml | SQL (voir style/preamble.tex)
+%%       options : first-line=22, last-line=47 (extrait), line-numbers=false…
+%%       Référence : \cref{étiquette} → « programme 1 »
+%%     Code en ligne : \code|x = 3|    Code écrit à la main : environnement Piton.
+%% ---------------------------------------------------------------------
+\NewDocumentCommand{\codefile}{O{} m m m m}{%
+  \par\addvspace{0.8\baselineskip}\begingroup\needspace{6\baselineskip}%
+  \captionof{programme}{#4}\label{#5}\nopagebreak\vspace{0.3em}%
+  \footnotesize\PitonInputFile[language=#2,#1]{#3}%
+  \endgroup\par\addvspace{0.4\baselineskip}}
+
+%% ---------------------------------------------------------------------
+%%  6. DIVERS
+%% ---------------------------------------------------------------------
+% Résumé en tête de document, sous le bloc de titre
+\NewDocumentEnvironment{resume}{}{%
+  \begin{quote}\small
+  {\sffamily\bfseries\scshape\color{TextColor}Résumé.}\enspace\ignorespaces
+}{\end{quote}}
+
+%% ---------------------------------------------------------------------
+%%  7. SOURCES ET NOTES
+%%     \source{Texte}  : ligne de crédit sous une figure ou un tableau
+%%                       (norme éditoriale : « Source : … » ou « Adapté de [3] »)
+%%     Notes de bas de page : \footnote{…}
+%%     Notes de tableau (threeparttable) :
+%%        \begin{table} \caption{…}
+%%          \begin{threeparttable}
+%%            \begin{tabular}{…} … {$u(T)$\tnote{a}} … \end{tabular}
+%%            \begin{tablenotes}[flushleft]\footnotesize \item[a] Texte de la note. \end{tablenotes}
+%%          \end{threeparttable}
+%%        \end{table}
+%% ---------------------------------------------------------------------
+\NewDocumentCommand{\source}{m}{%
+  \par\vspace{0.3em}\noindent{\footnotesize\itshape Source : #1\par}}

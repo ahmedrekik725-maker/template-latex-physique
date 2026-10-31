@@ -1,0 +1,51 @@
+% !TeX encoding = UTF-8
+% !TeX spellcheck = fr_FR
+% !TeX TXS-program:compile = txs:///latexmk
+%% =====================================================================
+%%  main.tex — NOUVEAU TRAVAIL : copier ce fichier, le renommer
+%%  (ex. devoir-ondes.tex), puis modifier la partie « RÉGLAGES ».
+%%
+%%  Compiler : F5 dans TeXstudio, ou double-clic sur compiler.bat.
+%%  Modèles complets à copier :  exemple-A-assignment.tex (devoir)
+%%                               exemple-B-tp.tex         (TP)
+%%                               exemple-C-simulation.tex (simulation Python)
+%% =====================================================================
+\documentclass[a4paper,11pt]{scrartcl}
+\input{style/preamble}
+\input{style/macros}
+\input{config}                      % votre identité (une seule fois)
+
+%% ============================ RÉGLAGES ================================
+\docsetup{
+  type      = assignment,           % assignment | tp | simulation | rapport
+  cours     = {Mécanique quantique},
+  enseignant= {},
+  titre     = {Titre du devoir},
+  soustitre = {},
+  date      = {\today},
+  % brouillon = true,               % filigrane « BROUILLON »
+  % titlestyle = page,              % page de titre complète
+}
+%% =======================================================================
+
+\begin{document}
+\MakeDocTitle
+
+\section{Introduction}
+
+Ce fichier est un point de départ minimal. Il contient une équation numérotée
+(\cref{eq:schrodinger}), une grandeur avec incertitude
+(\qtyerr{9.81}{0.05}{\metre\per\second\squared}) et une citation
+bibliographique~\cite{griffiths2018}. L'équation de Schrödinger indépendante
+du temps s'écrit
+\begin{equation}
+  \op{H}\ket{\psi} = E\ket{\psi}\,,
+  \label{eq:schrodinger}
+\end{equation}
+où $\op{H}$ est le hamiltonien du système et $E$ son énergie.
+
+% Pour découper un long document en fichiers :
+% \input{sections/mon-chapitre}
+
+\printbibliography
+\end{document}

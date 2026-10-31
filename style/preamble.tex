@@ -1,0 +1,420 @@
+% !TeX encoding = UTF-8
+%% =====================================================================
+%%  style/preamble.tex — Packages, polices, mise en page, mathématiques,
+%%  unités, figures/tableaux, code, bibliographie, hyperliens, titre.
+%%
+%%  NE PAS MODIFIER pour un devoir ordinaire :
+%%    - identité permanente (nom, université, logo) → config.tex
+%%    - informations du document (titre, cours, type) → début du fichier .tex
+%%  Compilation : LuaLaTeX uniquement (latexmk s'en charge).
+%%
+%%  Ordre de chargement :
+%%     \documentclass → style/preamble → style/macros → config → \docsetup{…}
+%% =====================================================================
+
+%% ---------------------------------------------------------------------
+%%  0. Garde-fou : ce template exige LuaLaTeX
+%% ---------------------------------------------------------------------
+\RequirePackage{iftex}
+\RequirePackage{etoolbox}
+\ifluatex\else
+  \PackageError{preamble}{Ce template doit être compilé avec LuaLaTeX}
+    {Dans TeXstudio : Options > Configurer TeXstudio > Compilation > Compilateur par défaut = latexmk (voir README.md).}
+\fi
+
+%% ---------------------------------------------------------------------
+%%  1. Palette : TEXTE ENTIÈREMENT NOIR ET GRIS (aucune couleur de thème)
+%%     Les seules couleurs du document viennent des images importées, des
+%%     courbes tracées et de la coloration syntaxique du code (plus bas).
+%%     Pour réintroduire un accent coloré partout (liens, puces, filets,
+%%     remarques…), il suffit de changer la définition de AccentColor.
+%% ---------------------------------------------------------------------
+\RequirePackage{xcolor}
+\definecolor{TextColor}{gray}{0.08}      % texte : noir doux
+\definecolor{MutedColor}{gray}{0.40}     % informations secondaires : gris foncé
+\definecolor{RuleColor}{gray}{0.72}      % filets, grilles : gris clair
+\definecolor{FillColor}{gray}{0.96}      % fonds très légers (code)
+\colorlet{AccentColor}{TextColor}        % pas d'accent coloré : tout en noir
+\colorlet{LinkColor}{TextColor}          % liens et citations : noir (cliquables)
+\AtBeginDocument{\color{TextColor}}
+
+%% Couleurs des DONNÉES et du CODE : indépendantes du thème ci-dessus.
+%% Les figures importées (PDF, PNG…) ne sont jamais recolorées ni passées en gris.
+\definecolor{DataBlue}{RGB}{31,119,180}  % courbes, points (convention matplotlib)
+\definecolor{DataRed}{RGB}{214,39,40}
+\definecolor{CodeKeyword}{RGB}{0,51,153}   % mots-clés : bleu
+\definecolor{CodeBuiltin}{RGB}{0,115,115}  % fonctions prédéfinies : vert-bleu
+\definecolor{CodeComment}{RGB}{85,125,85}  % commentaires : vert doux
+\definecolor{CodeString}{RGB}{163,36,36}   % chaînes : rouge brique
+\definecolor{CodeNumber}{RGB}{176,92,0}    % nombres : ocre
+\definecolor{CodeLineNo}{gray}{0.55}
+
+%% ---------------------------------------------------------------------
+%%  2. Mathématiques : amsmath/mathtools AVANT unicode-math
+%%     (amssymb et bm sont volontairement omis : unicode-math fournit tous
+%%      les symboles AMS et les alphabets gras/ISO ; les charger ferait
+%%      doublon, voire conflit.)
+%% ---------------------------------------------------------------------
+\RequirePackage{amsmath}
+\RequirePackage{mathtools}
+\RequirePackage{amsthm}
+
+%% ---------------------------------------------------------------------
+%%  3. Polices : Libertinus Serif (texte), Libertinus Math (mathématiques),
+%%     Libertinus Sans (titres, étiquettes), Libertinus Mono (code), réglés pour
+%%     LuaLaTeX selon test_fonts/CLAUDE-libertinus.md. fontspec + unicode-math.
+%%     Chargées par NOM DE FICHIER : fonctionne sans que la base de polices de
+%%     luaotfload soit à jour. Si les fichiers sont absents, repli sur Latin
+%%     Modern avec un AVERTISSEMENT dans le log.
+%% ---------------------------------------------------------------------
+\RequirePackage{fontspec}
+\RequirePackage[math-style=TeX,bold-style=TeX,warnings-off={mathtools-colon,mathtools-overbracket}]{unicode-math}
+
+\IfFontExistsTF{LibertinusSerif-Regular.otf}
+  {\IfFontExistsTF{LibertinusMath-Regular.otf}
+    {\def\TemplateFonts{libertinus}}
+    {\def\TemplateFonts{lm}}}
+  {\def\TemplateFonts{lm}}
+
+\ifdefstring{\TemplateFonts}{libertinus}{%
+  % Réglage « Libertinus pour LuaLaTeX » (test_fonts/CLAUDE-libertinus.md) :
+  % gras en Semibold (le Bold est trop lourd), maths avec intégrales inclinées (ss08).
+  \setmainfont{LibertinusSerif}[
+    Extension      = .otf,
+    UprightFont    = *-Regular,
+    ItalicFont     = *-Italic,
+    BoldFont       = *-Semibold,
+    BoldItalicFont = *-SemiboldItalic]
+  \setsansfont{LibertinusSans}[
+    Extension = .otf, UprightFont = *-Regular,
+    ItalicFont = *-Italic, BoldFont = *-Bold]
+  % Code (programmes) : Latin Modern Mono, inchangé (existe en gras et en italique)
+  \setmonofont{lmmono10-regular.otf}[Scale=MatchLowercase,
+    BoldFont=lmmonolt10-bold.otf, ItalicFont=lmmono10-italic.otf,
+    BoldItalicFont=lmmonolt10-boldoblique.otf]
+  \setmathfont{LibertinusMath-Regular.otf}[StylisticSet=8]   % ss08 : intégrales inclinées
+}{%
+  \PackageWarningNoLine{preamble}{%
+    Polices Libertinus introuvables : repli sur Latin Modern.\MessageBreak
+    Installer le paquet MiKTeX « libertinus-fonts » pour le rendu prévu}%
+  \setmainfont{lmroman10-regular.otf}[
+    BoldFont=lmroman10-bold.otf, ItalicFont=lmroman10-italic.otf,
+    BoldItalicFont=lmroman10-bolditalic.otf, SmallCapsFont=lmromancaps10-regular.otf]
+  \setsansfont{lmsans10-regular.otf}[
+    BoldFont=lmsans10-bold.otf, ItalicFont=lmsans10-oblique.otf]
+  \setmonofont{lmmono10-regular.otf}[
+    BoldFont=lmmonolt10-bold.otf, ItalicFont=lmmono10-italic.otf,
+    BoldItalicFont=lmmonolt10-boldoblique.otf]
+  \setmathfont{latinmodern-math.otf}
+}
+
+%% ---------------------------------------------------------------------
+%%  4. Langue : français
+%% ---------------------------------------------------------------------
+\RequirePackage[french]{babel}
+% Listes gérées par enumitem (et non par babel-french) ; l'avertissement
+% « legacy list code » est purement informatif, on le désactive.
+\frenchsetup{StandardLists=true, SuppressWarning=true,
+  CustomiseFigTabCaptions=false,
+  SmallCapsFigTabCaptions=false}            % légendes : réglées par caption
+\addto\captionsfrench{\def\tablename{Tableau}}   % cohérent avec cleveref
+\RequirePackage[autostyle=true]{csquotes}   % \enquote{…} → « … »
+
+%% ---------------------------------------------------------------------
+%%  5. Mise en page : A4, marges équilibrées, 11 pt, interligne aéré
+%% ---------------------------------------------------------------------
+\RequirePackage[a4paper,
+  left=2.7cm, right=2.7cm, top=2.9cm, bottom=3.0cm,
+  headheight=16pt, headsep=0.9cm, footskip=1.3cm]{geometry}
+\linespread{1.05}
+\KOMAoptions{parskip=half-}      % paragraphes séparés par un demi-interligne
+\RequirePackage[protrusion=true, expansion=true]{microtype}  % justification plus régulière (LuaLaTeX)
+\RequirePackage{enumitem}
+\setlist{nosep, topsep=0.35em, itemsep=0.2em, leftmargin=*, labelsep=0.6em}
+\setlist[itemize,1]{label=\textcolor{AccentColor}{\textendash}}
+\setlist[itemize,2]{label=\textcolor{MutedColor}{\textbullet}}
+\setlist[enumerate,1]{label=\textcolor{AccentColor}{\arabic*.}}
+\setlist[enumerate,2]{label=\textcolor{AccentColor}{(\alph*)}}
+\RequirePackage{framed}          % filet vertical de l'environnement solution
+\emergencystretch=2em
+\hbadness=5000                   % ne signaler que les lignes réellement trop lâches
+\vbadness=10000 \vfuzz=3pt       % pages à flottants : pas d'avis sur le remplissage vertical
+\raggedbottom                    % bas de page libre : évite les avis « underfull vbox » avec figures et tableaux
+
+%% Titres de sections : Palatino gras, noir (le gras est toujours noir ; le bleu
+%% du logo est réservé aux éléments non gras : liens, puces, filet, remarques…)
+\setkomafont{disposition}{\sffamily\bfseries\color{TextColor}}
+\setkomafont{section}{\Large}
+\setkomafont{subsection}{\large}
+\setkomafont{subsubsection}{\normalsize}
+\setkomafont{paragraph}{\normalfont\normalsize\itshape\color{AccentColor}}  % titres « run-in » en italique romain
+\setkomafont{descriptionlabel}{\sffamily\bfseries}
+\RedeclareSectionCommand[beforeskip=1.9\baselineskip, afterskip=0.7\baselineskip]{section}
+\RedeclareSectionCommand[beforeskip=1.4\baselineskip, afterskip=0.5\baselineskip]{subsection}
+\RedeclareSectionCommand[beforeskip=1.1\baselineskip, afterskip=0.3\baselineskip]{subsubsection}
+\renewcommand*{\sectionformat}{\thesection\enskip}
+\renewcommand*{\subsectionformat}{\thesubsection\enskip}
+\renewcommand*{\subsubsectionformat}{\thesubsubsection\enskip}
+
+%% En-têtes et pieds de page discrets
+\RequirePackage[headsepline=0.4pt, footsepline=false]{scrlayer-scrpage}
+\setkomafont{headsepline}{\color{RuleColor}}
+\setkomafont{pageheadfoot}{\normalfont\footnotesize}
+\setkomafont{pagenumber}{\normalfont\small\color{TextColor}}
+% En-tête sur toutes les pages (sauf la première) : à gauche le titre court en
+% italique gris, à droite le cours en romain noir ; filet gris fin dessous.
+% Numéro de page centré en pied de page (première page comprise).
+\clearpairofpagestyles
+\ihead{\itshape\color{MutedColor}\docHeaderLeft}
+\ohead{\color{TextColor}\docHeaderRight}
+\cfoot*{\pagemark}              % étoile : valable aussi pour la première page (style plain)
+\pagestyle{scrheadings}
+\addtokomafont{caption}{\small}
+
+%% Notes de bas de page : petit filet gris, marque bleue en exposant, texte 9 pt
+\setkomafont{footnote}{\footnotesize\hbadness=10000 }  % pas d'avis « underfull » sur une note d'une ligne
+\setkomafont{footnotelabel}{\color{AccentColor}}
+\setkomafont{footnotereference}{\color{AccentColor}}
+\deffootnote[1.3em]{1.3em}{0pt}{\textsuperscript{\thefootnotemark}\hspace{0.2em}}
+\renewcommand*{\footnoterule}{\kern-3pt{\color{RuleColor}\hrule width 0.28\columnwidth height 0.4pt}\kern 2.6pt}
+\addtolength{\skip\footins}{4pt}
+
+%% ---------------------------------------------------------------------
+%%  6. Réglages mathématiques
+%% ---------------------------------------------------------------------
+\allowdisplaybreaks[1]
+\setlength{\jot}{5pt}
+\numberwithin{equation}{section}
+\mathtoolsset{mathic=true}
+% Virgule décimale en mode math : $0,5$ → 0,5 ; une virgule suivie d'une espace
+% reste un séparateur ($a, b$). Les formes tassées $f(x,y)$ restent correctes.
+\RequirePackage{icomma}
+\setlength{\abovedisplayskip}{9pt plus 3pt minus 4pt}
+\setlength{\belowdisplayskip}{9pt plus 3pt minus 4pt}
+\setlength{\abovedisplayshortskip}{3pt plus 2pt}
+\setlength{\belowdisplayshortskip}{7pt plus 3pt minus 3pt}
+
+%% ---------------------------------------------------------------------
+%%  7. Unités et nombres : siunitx v3, virgule décimale française
+%% ---------------------------------------------------------------------
+\RequirePackage{siunitx}
+\sisetup{
+  locale                  = FR,
+  per-mode                = power,
+  inter-unit-product      = \ensuremath{{}\cdot{}},
+  range-phrase            = { à~},
+  range-units             = single,
+  separate-uncertainty    = true,
+  uncertainty-mode        = separate,
+  exponent-product        = \cdot,
+  output-complex-root     = \mathrm{i},
+  group-digits            = integer,   % espace fine dans 12 345, pas dans les décimales
+  group-minimum-digits    = 4,
+}
+\DeclareSIUnit{\atmosphere}{atm}
+\DeclareSIUnit{\mmHg}{mmHg}
+\DeclareSIUnit{\wavenumber}{\per\centi\metre}   % nombre d'onde spectroscopique
+\DeclareSIUnit{\gauss}{G}
+
+%% ---------------------------------------------------------------------
+%%  8. Figures, tableaux, légendes
+%% ---------------------------------------------------------------------
+\RequirePackage{graphicx}
+\graphicspath{{figures/}}
+% Une image ne dépasse jamais la largeur de ligne, n'est jamais déformée,
+% et garde sa taille naturelle si elle est plus petite.
+\makeatletter
+\newcommand*{\maxwidth}{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\makeatother
+\setkeys{Gin}{width=\maxwidth,keepaspectratio}
+
+\RequirePackage{booktabs}
+\RequirePackage{array}
+\RequirePackage{tabularx}
+\RequirePackage{threeparttable}   % notes de tableau : \tnote{a} + environnement tablenotes
+\setlength{\heavyrulewidth}{0.8pt}
+\setlength{\lightrulewidth}{0.4pt}
+\setlength{\cmidrulewidth}{0.3pt}
+\renewcommand{\arraystretch}{1.18}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}   % colonne texte extensible
+
+% caption signale en fin de document tout \captionsetup[type] jamais utilisé
+% (ex. [table] dans un document sans tableau). Réglages volontairement
+% génériques ici : on vide la liste de contrôle pour éviter ces avis inutiles.
+% (Doit être enregistré AVANT le chargement de caption.)
+\makeatletter
+\AddToHook{enddocument}[tpl-caption-clear]{\@ifundefined{caption@optlist}{}{\gdef\caption@optlist{}}}
+\DeclareHookRule{enddocument}{tpl-caption-clear}{before}{caption}
+\DeclareHookRule{enddocument}{tpl-caption-clear}{before}{caption3}
+\makeatother
+\RequirePackage{caption}
+\RequirePackage{subcaption}
+% Normes éditoriales scientifiques : « Figure 1. Légende… » — étiquette en gras
+% (bleu du logo), texte courant, phrase terminée par un point ; figure : légende
+% SOUS l'illustration ; tableau et programme : légende AU-DESSUS ; légende d'une
+% ligne centrée, de plusieurs lignes justifiée ; corps un cran plus petit.
+\captionsetup{
+  font           = small,
+  labelfont      = {bf,color=TextColor},
+  textfont       = {color=TextColor},
+  labelsep       = period,
+  justification  = justified,
+  singlelinecheck= true,
+  format         = plain,
+  skip           = 8pt,
+  margin         = 0.8em,
+}
+\captionsetup[table]{position=above, skip=6pt}
+\captionsetup[figure]{position=below, skip=8pt}
+\captionsetup[subfigure]{labelformat=parens, labelfont={bf,color=TextColor}, labelsep=space,
+  font=footnotesize, margin=0pt}
+\KOMAoptions{captions=tableheading}
+% Légende « Programme n » pour les extraits de code (voir \codefile)
+\DeclareCaptionType{programme}[Programme][Liste des programmes]
+\captionsetup[programme]{position=above, skip=4pt}
+% Figures et tableaux : centrés d'office ; texte des tableaux en \small.
+% (\@floatboxreset s'exécute DANS la boîte flottante, après \@parboxrestore :
+%  c'est le seul endroit où \centering et la taille de police persistent.)
+\makeatletter
+\AtBeginEnvironment{figure}{\def\@floatboxreset{\reset@font\normalsize\@setminipage\centering}}
+\AtBeginEnvironment{table}{\def\@floatboxreset{\reset@font\small\@setminipage\centering}}
+\makeatother
+
+%% Graphiques vectoriels (schémas TikZ, courbes pgfplots)
+\RequirePackage{tikz}
+\usetikzlibrary{arrows.meta,calc,angles,quotes}
+\RequirePackage{pgfplots}
+\pgfplotsset{compat=newest}
+\pgfplotsset{
+  every axis/.append style={
+    axis line style={color=TextColor, line width=0.4pt},
+    tick style={color=TextColor, line width=0.4pt},
+    label style={font=\small}, tick label style={font=\footnotesize},
+    legend style={font=\footnotesize, draw=RuleColor, fill=none, text=TextColor},
+    grid style={color=RuleColor!60, line width=0.3pt},
+    /pgf/number format/use comma,          % virgule décimale sur les axes
+  },
+}
+
+%% Tableaux lus depuis un fichier CSV (résultats d'une simulation Python)
+%%   \pgfplotstabletypeset[<options>]{data/resultats.csv}   (voir exemple C)
+\RequirePackage{pgfplotstable}
+\pgfplotstableset{
+  col sep=comma,
+  /pgf/number format/use comma,
+  every head row/.style={before row=\toprule, after row=\midrule},
+  every last row/.style={after row=\bottomrule},
+  % notation scientifique « 8,2 × 10⁻¹¹ » : columns/<col>/.style={sci10}
+  sci10/.style={/pgf/number format/sci,
+    /pgf/number format/sci generic={mantissa sep=\times, exponent={10^{##1}}}},
+}
+
+%% Code source (Python, MATLAB, C…) : piton (LuaLaTeX, sans shell-escape, sans minted).
+%% Coloration syntaxique par langage : mots-clés, fonctions prédéfinies, chaînes,
+%% commentaires, nombres. Les couleurs du code sont indépendantes du thème.
+%%   \codefile[options]{Python}{code/x.py}{Légende}{prog:x}   (voir macros.tex)
+\RequirePackage{needspace}
+\RequirePackage{piton}
+\SetPitonStyle{
+  Keyword          = \bfseries\color{CodeKeyword},
+  Keyword.Governing= \bfseries\color{CodeKeyword},
+  Keyword.Constant = \bfseries\color{CodeKeyword},
+  Name.Builtin     = \color{CodeBuiltin},
+  Name.Function    = \color{TextColor}\bfseries,
+  Name.Class       = \color{TextColor}\bfseries,
+  Name.Decorator   = \color{CodeBuiltin},
+  Name.Namespace   = \color{CodeBuiltin},
+  Name.Type        = \color{CodeBuiltin},
+  Exception        = \color{CodeString},
+  Comment          = \itshape\color{CodeComment},
+  String           = \color{CodeString},
+  String.Doc       = \itshape\color{CodeComment},
+  String.Interpol  = \color{CodeString},
+  Number           = \color{CodeNumber},
+  Operator         = \color{MutedColor},
+  Operator.Word    = \bfseries\color{CodeKeyword},
+  Preproc          = \color{CodeBuiltin},
+}
+\PitonOptions{
+  line-numbers,
+  line-numbers/format = \tiny\color{CodeLineNo},
+  line-numbers/sep    = 8pt,
+  line-numbers/absolute,           % avec first-line : numéros du fichier d'origine
+  background-color    = FillColor,
+  left-margin         = 1.6em,
+  break-lines,
+  splittable          = 4,         % un long programme peut passer à la page suivante
+}
+% Langages absents de piton (Python, C, OCaml, SQL le sont d'origine)
+\NewPitonLanguage{Matlab}{%
+  morekeywords={break,case,catch,classdef,continue,else,elseif,end,for,function,
+    global,if,otherwise,parfor,persistent,return,switch,try,while},
+  morecomment=[l]\%,
+  morestring=[b]',
+  morestring=[b]"}
+\NewDocumentCommand{\code}{v}{\texttt{\small #1}}   % code en ligne : \code|x = 3|
+
+%% ---------------------------------------------------------------------
+%%  9. Bibliographie : biblatex + Biber, style numérique « physique »
+%%     (APS/AIP via biblatex-phys, entrées numérotées entre crochets)
+%% ---------------------------------------------------------------------
+\RequirePackage[
+  backend      = biber,
+  style        = phys,
+  biblabel     = brackets,
+  citestyle    = numeric-comp,
+  sorting      = none,          % ordre d'apparition des citations
+  maxbibnames  = 6, minbibnames = 3,
+  doi          = true,
+  url          = true,
+  isbn         = false,
+  eprint       = true,
+  giveninits   = true,
+  language     = auto,
+]{biblatex}
+\addbibresource{references.bib}
+\DefineBibliographyStrings{french}{bibliography = {Références}}
+\defbibheading{bibliography}[\bibname]{\section*{#1}\markright{#1}\addcontentsline{toc}{section}{#1}}
+\setlength{\bibitemsep}{0.25\baselineskip}
+\urlstyle{same}                 % DOI et URL dans la police du texte
+\renewcommand*{\bibfont}{\small}
+
+%% ---------------------------------------------------------------------
+%%  10. Hyperliens et références croisées (hyperref puis cleveref)
+%% ---------------------------------------------------------------------
+\RequirePackage[unicode]{hyperref}
+\hypersetup{
+  colorlinks   = true,
+  linkcolor    = LinkColor,        % gris foncé : cliquable mais sobre
+  citecolor    = LinkColor,
+  urlcolor     = LinkColor,
+  filecolor    = LinkColor,
+  bookmarksnumbered = true,
+  pdfcreator   = {LuaLaTeX},
+}
+\RequirePackage[french,nameinlink,noabbrev]{cleveref}
+\creflabelformat{equation}{#2\textup{(#1)}#3}
+
+\crefname{equation}{équation}{équations}\Crefname{equation}{Équation}{Équations}
+\crefname{figure}{figure}{figures}      \Crefname{figure}{Figure}{Figures}
+\crefname{subfigure}{figure}{figures}   \Crefname{subfigure}{Figure}{Figures}
+\crefname{table}{tableau}{tableaux}     \Crefname{table}{Tableau}{Tableaux}
+\crefname{section}{section}{sections}   \Crefname{section}{Section}{Sections}
+\crefname{subsection}{section}{sections}\Crefname{subsection}{Section}{Sections}
+\crefname{subsubsection}{section}{sections}\Crefname{subsubsection}{Section}{Sections}
+\crefname{definition}{définition}{définitions}     \Crefname{definition}{Définition}{Définitions}
+\crefname{theoreme}{théorème}{théorèmes}           \Crefname{theoreme}{Théorème}{Théorèmes}
+\crefname{lemme}{lemme}{lemmes}                    \Crefname{lemme}{Lemme}{Lemmes}
+\crefname{proposition}{proposition}{propositions}  \Crefname{proposition}{Proposition}{Propositions}
+\crefname{corollaire}{corollaire}{corollaires}     \Crefname{corollaire}{Corollaire}{Corollaires}
+\crefname{remarque}{remarque}{remarques}           \Crefname{remarque}{Remarque}{Remarques}
+\crefname{exemple}{exemple}{exemples}              \Crefname{exemple}{Exemple}{Exemples}
+\crefname{exercice}{exercice}{exercices}           \Crefname{exercice}{Exercice}{Exercices}
+\crefname{question}{question}{questions}           \Crefname{question}{Question}{Questions}
+\crefname{enumi}{point}{points}                    \Crefname{enumi}{Point}{Points}
+\crefname{programme}{programme}{programmes}      \Crefname{programme}{Programme}{Programmes}
+
+%% ---------------------------------------------------------------------
+%%  11. Informations du document et titre (voir style/titre.tex)
+%% ---------------------------------------------------------------------
+\input{style/titre}

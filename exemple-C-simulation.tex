@@ -1,0 +1,31 @@
+% !TeX encoding = UTF-8
+% !TeX spellcheck = fr_FR
+% !TeX TXS-program:compile = txs:///latexmk
+%% =====================================================================
+%%  Exemple C — Compte rendu de simulation numérique (type = simulation)
+%%  Modèle à copier pour un travail de physique numérique.
+%%
+%%  Avant de compiler :   python code/simulation.py      (écrit data/*.csv)
+%% =====================================================================
+\documentclass[a4paper,11pt]{scrartcl}
+\input{style/preamble}
+\input{style/macros}
+\input{config}
+
+%% ============================ RÉGLAGES ================================
+\docsetup{
+  type       = simulation,
+  numero     = {1},
+  cours      = {Physique numérique},
+  enseignant = {Nom de l'enseignant},
+  titre      = {Période du pendule simple non linéaire},
+  titrecourt = {Pendule non linéaire},
+  soustitre  = {Intégration numérique par Runge--Kutta d'ordre 4 en Python},
+}
+%% =======================================================================
+
+\begin{document}
+\MakeDocTitle
+\input{sections/exemple-C}
+\printbibliography
+\end{document}

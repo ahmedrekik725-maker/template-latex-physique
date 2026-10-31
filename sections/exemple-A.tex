@@ -1,0 +1,291 @@
+% !TeX root = ../exemple-A-assignment.tex
+% !TeX encoding = UTF-8
+%% =====================================================================
+%%  Exemple A — Devoir à la maison de physique théorique
+%%  Sujet : l'oscillateur harmonique quantique à une dimension.
+%%  Montre : rappels (définition, théorème, lemme, exemple, remarque),
+%%  exercice à plusieurs questions, solutions détaillées, démonstrations,
+%%  équations numérotées et référencées, notations de Dirac, unités SI.
+%% =====================================================================
+
+\begin{resume}
+  Ce devoir étudie l'oscillateur harmonique quantique unidimensionnel par la
+  méthode algébrique des opérateurs d'échelle. On établit le spectre de
+  l'énergie, on calcule les dispersions en position et en impulsion, et on
+  vérifie l'inégalité de Heisenberg–Robertson.
+\end{resume}
+
+%% ---------------------------------------------------------------------
+\section{Rappels théoriques}
+%% ---------------------------------------------------------------------
+
+\subsection{Hamiltonien et opérateurs d'échelle}
+
+Une particule de masse $m$ soumise au potentiel $V(x)=\tfrac12 m\omega^{2}x^{2}$
+est décrite par le hamiltonien
+\begin{equation}
+  \op{H} = \frac{\op{p}^{2}}{2m} + \frac{1}{2}\,m\omega^{2}\,\op{x}^{2},
+  \qquad \comm{\op{x}}{\op{p}} = \ii\hbar\,.
+  \label{eq:H}
+\end{equation}
+
+\begin{definition}[Opérateurs d'échelle]\label{def:echelle}
+  On appelle opérateur d'annihilation $\op{a}$ et opérateur de création
+  $\op{a}\adj$ les opérateurs
+  \begin{align}
+    \op{a}  &= \sqrt{\frac{m\omega}{2\hbar}}\,\Bigl(\op{x} + \frac{\ii}{m\omega}\,\op{p}\Bigr),
+    \label{eq:a}\\
+    \op{a}\adj &= \sqrt{\frac{m\omega}{2\hbar}}\,\Bigl(\op{x} - \frac{\ii}{m\omega}\,\op{p}\Bigr),
+    \label{eq:adag}
+  \end{align}
+  et l'on pose $\op{N}=\op{a}\adj\op{a}$ (opérateur nombre).
+\end{definition}
+
+\begin{lemme}\label{lem:comm}
+  Les opérateurs d'échelle vérifient
+  \begin{equation}
+    \comm{\op{a}}{\op{a}\adj} = 1,
+    \qquad
+    \comm{\op{N}}{\op{a}} = -\op{a},
+    \qquad
+    \comm{\op{N}}{\op{a}\adj} = \op{a}\adj .
+    \label{eq:comm}
+  \end{equation}
+\end{lemme}
+
+\begin{demonstration}
+  Comme $\comm{\op{x}}{\op{x}}=\comm{\op{p}}{\op{p}}=0$ et
+  $\comm{\op{p}}{\op{x}}=-\ii\hbar$, la bilinéarité du commutateur donne
+  \begin{align*}
+    \comm{\op{a}}{\op{a}\adj}
+      &= \frac{m\omega}{2\hbar}\Bigl(
+         -\frac{\ii}{m\omega}\comm{\op{x}}{\op{p}}
+         +\frac{\ii}{m\omega}\comm{\op{p}}{\op{x}}\Bigr)
+       = \frac{1}{2\hbar}\bigl(-\ii\cdot\ii\hbar-\ii\cdot\ii\hbar\bigr)
+       = 1 .
+  \end{align*}
+  Ensuite, l'identité $\comm{AB}{C}=A\comm{B}{C}+\comm{A}{C}B$ appliquée à
+  $\op{N}=\op{a}\adj\op{a}$ fournit
+  $\comm{\op{N}}{\op{a}}=\op{a}\adj\comm{\op{a}}{\op{a}}+\comm{\op{a}\adj}{\op{a}}\op{a}=-\op{a}$
+  puisque $\comm{\op{a}\adj}{\op{a}}=-1$. Le dernier commutateur s'obtient de
+  même : $\comm{\op{N}}{\op{a}\adj}=\op{a}\adj\comm{\op{a}}{\op{a}\adj}=\op{a}\adj$.
+\end{demonstration}
+
+\subsection{Relation d'incertitude}
+
+Pour une observable $\op{A}$ et un état normalisé $\ket{\psi}$, on note
+$\ev{\op{A}}{\psi}=\bra{\psi}\op{A}\ket{\psi}$ sa valeur moyenne et
+$\Delta A=\sqrt{\ev{\op{A}^{2}}{\psi}-\ev{\op{A}}{\psi}^{2}}$ sa dispersion.
+
+\begin{theoreme}[Inégalité de Robertson]\label{thm:robertson}
+  Pour deux observables $\op{A}$ et $\op{B}$ et tout état normalisé
+  $\ket{\psi}$,
+  \begin{equation}
+    \Delta A\,\Delta B \;\geq\; \frac{1}{2}\,\abs[\big]{\ev{\comm{\op{A}}{\op{B}}}{\psi}} .
+    \label{eq:robertson}
+  \end{equation}
+\end{theoreme}
+
+\begin{demonstration}
+  Posons $\ket{f}=(\op{A}-\ev{\op{A}}{\psi})\ket{\psi}$ et
+  $\ket{g}=(\op{B}-\ev{\op{B}}{\psi})\ket{\psi}$, de sorte que
+  $\braket{f}{f}=(\Delta A)^{2}$ et $\braket{g}{g}=(\Delta B)^{2}$.
+  L'inégalité de Cauchy–Schwarz s'écrit
+  \begin{equation}
+    (\Delta A)^{2}(\Delta B)^{2} \geq \abs{\braket{f}{g}}^{2}
+    \geq \bigl(\Imag\braket{f}{g}\bigr)^{2}.
+    \label{eq:CS}
+  \end{equation}
+  Or $\braket{g}{f}=\braket{f}{g}\cc$, d'où
+  \begin{equation}
+    \Imag\braket{f}{g}=\frac{\braket{f}{g}-\braket{g}{f}}{2\ii}
+    =\frac{1}{2\ii}\,\ev{\comm{\op{A}}{\op{B}}}{\psi},
+  \end{equation}
+  car les termes en $\ev{\op{A}}{\psi}$ et $\ev{\op{B}}{\psi}$ se compensent
+  dans la différence. Cette quantité étant réelle, son carré est le carré de
+  son module, soit $\tfrac14\abs{\ev{\comm{\op{A}}{\op{B}}}{\psi}}^{2}$. En
+  reportant dans l'\cref{eq:CS} et en prenant la racine carrée, on obtient
+  l'\cref{eq:robertson}.
+\end{demonstration}
+
+\begin{exemple}[État fondamental]\label{ex:fondamental}
+  L'état $\ket{0}$ défini par $\op{a}\ket{0}=0$ vérifie, en représentation
+  position où $\op{p}=-\ii\hbar\,\dd/\dd x$,
+  \begin{equation}
+    x\,\psi_{0}(x)+\frac{\hbar}{m\omega}\dv{\psi_{0}}{x}=0
+    \quad\Longrightarrow\quad
+    \psi_{0}(x)=\Bigl(\frac{m\omega}{\pi\hbar}\Bigr)^{1/4}
+      \exp\Bigl(-\frac{m\omega x^{2}}{2\hbar}\Bigr).
+    \label{eq:psi0}
+  \end{equation}
+\end{exemple}
+
+%% ---------------------------------------------------------------------
+\section{Exercice : spectre et dispersions}
+%% ---------------------------------------------------------------------
+
+\begin{exercice}[Oscillateur harmonique quantique]\label{exo:oh}
+  On reprend les notations de la \cref{def:echelle}. Les états propres
+  normalisés de $\op{N}$ sont notés $\ket{n}$, avec $\op{N}\ket{n}=n\ket{n}$.
+\end{exercice}
+
+%% ----- Question 1 -----
+\begin{question}[2 pts]\label{q:H}
+  Exprimer $\op{H}$ en fonction de $\op{N}$ et de $\hbar\omega$.
+\end{question}
+
+\begin{solution}
+  Calculons $\op{a}\adj\op{a}$ à partir des \cref{eq:a,eq:adag} :
+  \begin{align}
+    \op{a}\adj\op{a}
+      &= \frac{m\omega}{2\hbar}\Bigl(\op{x}-\frac{\ii}{m\omega}\op{p}\Bigr)
+         \Bigl(\op{x}+\frac{\ii}{m\omega}\op{p}\Bigr) \notag\\
+      &= \frac{m\omega}{2\hbar}\Bigl(\op{x}^{2}+\frac{\op{p}^{2}}{m^{2}\omega^{2}}
+         +\frac{\ii}{m\omega}\comm{\op{x}}{\op{p}}\Bigr)
+       = \frac{\op{H}}{\hbar\omega}-\frac12,
+    \label{eq:NH}
+  \end{align}
+  où l'on a utilisé $\comm{\op{x}}{\op{p}}=\ii\hbar$ et reconnu $\op{H}$
+  dans l'\cref{eq:H}. Il en résulte
+  \begin{equation}
+    \boxed{\;\op{H}=\hbar\omega\Bigl(\op{N}+\tfrac12\Bigr)\;}
+    \label{eq:Hdiag}
+  \end{equation}
+  Le hamiltonien est donc diagonal dans la base des $\ket{n}$.
+\end{solution}
+
+%% ----- Question 2 -----
+\begin{question}[4 pts]\label{q:spectre}
+  Montrer que le spectre de $\op{N}$ est l'ensemble $\NN$ des entiers naturels,
+  et que
+  \begin{equation}
+    \op{a}\ket{n}=
+    \begin{cases}
+      \sqrt{n}\,\ket{n-1}, & n\geq 1,\\[2pt]
+      0, & n=0,
+    \end{cases}
+    \qquad
+    \op{a}\adj\ket{n}=\sqrt{n+1}\,\ket{n+1}.
+    \label{eq:action}
+  \end{equation}
+  En déduire les niveaux d'énergie $E_{n}$.
+\end{question}
+
+\begin{solution}
+  Soit $\ket{\nu}$ un état propre normalisé de $\op{N}$ de valeur propre
+  $\nu$.
+
+  \emph{(i) Positivité.} On a
+  $\nu=\ev{\op{N}}{\nu}=\ev{\op{a}\adj\op{a}}{\nu}=\norm{\op{a}\ket{\nu}}^{2}\geq 0$,
+  avec égalité si et seulement si $\op{a}\ket{\nu}=0$.
+
+  \emph{(ii) Échelle.} D'après l'\cref{eq:comm},
+  $\op{N}\op{a}\ket{\nu}=(\op{a}\op{N}-\op{a})\ket{\nu}=(\nu-1)\,\op{a}\ket{\nu}$ :
+  si $\op{a}\ket{\nu}\neq0$, c'est un état propre de valeur propre $\nu-1$,
+  dont le carré de la norme vaut $\nu$. De même
+  $\op{N}\op{a}\adj\ket{\nu}=(\nu+1)\,\op{a}\adj\ket{\nu}$, avec
+  $\norm{\op{a}\adj\ket{\nu}}^{2}=\ev{\op{a}\op{a}\adj}{\nu}=\nu+1>0$.
+
+  \emph{(iii) Quantification.} Appliquons $\op{a}$ de façon répétée : les
+  valeurs propres $\nu,\nu-1,\nu-2,\dots$ doivent rester positives ou
+  nulles d'après (i). La suite s'interrompt seulement lorsqu'on atteint la
+  valeur propre $0$ (où $\op{a}\ket{0}=0$), ce qui exige $\nu\in\NN$. Réciproquement,
+  $\ket{n}\propto(\op{a}\adj)^{n}\ket{0}$ existe pour tout $n\in\NN$ d'après
+  (ii). Les relations \eqref{eq:action} découlent des normes calculées en (ii),
+  les phases étant choisies réelles positives.
+
+  Par l'\cref{eq:Hdiag}, les niveaux d'énergie sont
+  \begin{equation}
+    E_{n}=\hbar\omega\Bigl(n+\frac12\Bigr),\qquad n\in\NN .
+    \label{eq:En}
+  \end{equation}
+\end{solution}
+
+%% ----- Question 3 -----
+\begin{question}[4 pts]\label{q:dispersions}
+  Calculer $\ev{\op{x}}{n}$, $\ev{\op{p}}{n}$, $\ev{\op{x}^{2}}{n}$ et
+  $\ev{\op{p}^{2}}{n}$, puis le produit $\Delta x\,\Delta p$. Vérifier
+  l'\cref{eq:robertson} pour $\op{A}=\op{x}$ et $\op{B}=\op{p}$.
+\end{question}
+
+\begin{solution}
+  Inversons les \cref{eq:a,eq:adag} :
+  \begin{equation}
+    \op{x}=\sqrt{\frac{\hbar}{2m\omega}}\,\bigl(\op{a}+\op{a}\adj\bigr),
+    \qquad
+    \op{p}=-\ii\sqrt{\frac{m\hbar\omega}{2}}\,\bigl(\op{a}-\op{a}\adj\bigr).
+    \label{eq:xp}
+  \end{equation}
+  Comme $\op{a}$ et $\op{a}\adj$ changent $n$ d'une unité, leurs valeurs
+  moyennes dans $\ket{n}$ sont nulles : $\ev{\op{x}}{n}=\ev{\op{p}}{n}=0$.
+  Pour les carrés, seuls les termes qui conservent $n$ survivent, et
+  $\op{a}\op{a}\adj=\op{N}+1$ d'après l'\cref{eq:comm} :
+  \begin{align}
+    \ev{\op{x}^{2}}{n}
+      &=\frac{\hbar}{2m\omega}\,\ev{\op{a}\op{a}\adj+\op{a}\adj\op{a}}{n}
+       =\frac{\hbar}{2m\omega}\,(2n+1),
+    \label{eq:x2}\\
+    \ev{\op{p}^{2}}{n}
+      &=\frac{m\hbar\omega}{2}\,\ev{\op{a}\op{a}\adj+\op{a}\adj\op{a}}{n}
+       =\frac{m\hbar\omega}{2}\,(2n+1).
+    \label{eq:p2}
+  \end{align}
+  Les dispersions valent donc $\Delta x=\sqrt{\ev{\op{x}^{2}}{n}}$ et
+  $\Delta p=\sqrt{\ev{\op{p}^{2}}{n}}$, d'où
+  \begin{equation}
+    \Delta x\,\Delta p=\frac{\hbar}{2}\,(2n+1)=\hbar\Bigl(n+\frac12\Bigr).
+    \label{eq:DxDp}
+  \end{equation}
+  D'autre part $\ev{\comm{\op{x}}{\op{p}}}{n}=\ii\hbar$, donc le membre de
+  droite de l'\cref{eq:robertson} vaut $\hbar/2$. Puisque $n+\tfrac12\geq\tfrac12$,
+  l'inégalité est bien vérifiée pour tout $n$.
+\end{solution}
+
+\begin{corollaire}\label{cor:saturation}
+  L'état fondamental $\ket{0}$ sature l'inégalité de Robertson pour $(\op{x},\op{p})$ :
+  $\Delta x\,\Delta p=\hbar/2$.
+\end{corollaire}
+
+\begin{remarque}[Énergie du point zéro]\label{rem:zero}
+  D'après l'\cref{eq:En}, $E_{0}=\hbar\omega/2\neq 0$ : la particule ne peut pas
+  être au repos au fond du puits. Physiquement, annuler à la fois la
+  position et l'impulsion violerait l'\cref{eq:DxDp}, qui impose
+  $\Delta x\,\Delta p\geq\hbar/2$. L'énergie du point zéro est la
+  conséquence directe du principe d'incertitude~\cite{heisenberg1927,robertson1929}%
+  \footnote{Cette énergie ne s'annule pas à température nulle : c'est une propriété de
+  l'état fondamental, et non un effet thermique.}
+  (voir aussi le traitement de référence de~\cite{griffiths2018,cohen1973}).
+\end{remarque}
+
+%% ----- Question 4 -----
+\begin{question}[3 pts]\label{q:virial}
+  Montrer que $\ev{\op{p}^{2}/2m}{n}=\ev{\tfrac12 m\omega^{2}\op{x}^{2}}{n}=E_{n}/2$.
+\end{question}
+
+\begin{solution}
+  Par l'\cref{eq:p2}, $\ev{\op{p}^{2}/2m}{n}=\tfrac{\hbar\omega}{4}(2n+1)$ ; par
+  l'\cref{eq:x2}, $\ev{\tfrac12 m\omega^{2}\op{x}^{2}}{n}=\tfrac{\hbar\omega}{4}(2n+1)$.
+  Ces deux valeurs coïncident et valent $E_{n}/2$ d'après l'\cref{eq:En} :
+  c'est le théorème du viriel pour un potentiel quadratique.
+\end{solution}
+
+%% ----- Question 5 -----
+\begin{question}[2 pts]\label{q:numerique}
+  Un oscillateur a pour fréquence $\nu=\qty{1}{\tera\hertz}$. Calculer
+  l'énergie du point zéro en $\unit{\milli\electronvolt}$ et le nombre d'onde
+  correspondant $\tilde\nu=\nu/c$ en $\unit{\wavenumber}$.
+\end{question}
+
+\begin{solution}
+  Avec $\omega=2\pi\nu$, on a $E_{0}=\hbar\omega/2=h\nu/2$. Pour
+  $h=\qty{6.62607015e-34}{\joule\second}$ (valeur exacte) et
+  $\qty{1}{\electronvolt}=\qty{1.602176634e-19}{\joule}$,
+  \begin{equation}
+    E_{0}=\frac{h\nu}{2}
+    =\frac{\qty{6.62607015e-34}{\joule\second}\times\qty{1e12}{\hertz}}{2}
+    =\qty{3.313e-22}{\joule}\approx\qty{2.07}{\milli\electronvolt}.
+  \end{equation}
+  Le nombre d'onde est
+  $\tilde\nu=\nu/c=\qty{1e12}{\hertz}/\qty{2.99792458e10}{\centi\metre\per\second}
+  \approx\qty{33.4}{\wavenumber}$.
+\end{solution}

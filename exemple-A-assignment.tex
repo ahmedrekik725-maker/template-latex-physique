@@ -1,0 +1,28 @@
+% !TeX document-id = {432cec2e-e2a4-4c43-8baf-4ddaab88f11c}
+% !TeX encoding = UTF-8
+% !TeX spellcheck = fr_FR
+% !TeX TXS-program:compile = txs:///latexmk
+%% =====================================================================
+%%  Exemple A — Devoir à la maison de physique théorique
+%%  Modèle à copier pour un devoir (contenu dans sections/exemple-A.tex).
+%% =====================================================================
+\documentclass[a4paper,11pt]{scrartcl}
+\input{style/preamble}
+\input{style/macros}
+\input{config}
+
+%% ============================ RÉGLAGES ================================
+\docsetup{
+  type       = assignment,
+  cours      = {Mécanique quantique},
+  enseignant = {Nom de l'enseignant},
+  titre      = {Oscillateur harmonique quantique},
+  soustitre  = {Opérateurs d'échelle, spectre et relation d'incertitude},
+}
+%% =======================================================================
+
+\begin{document}
+\MakeDocTitle
+\input{sections/exemple-A}
+\printbibliography
+\end{document}

@@ -1,0 +1,200 @@
+% !TeX root = ../exemple-C-simulation.tex
+% !TeX encoding = UTF-8
+%% =====================================================================
+%%  Exemple C — Compte rendu de simulation numérique (Python)
+%%  Chaîne de travail :
+%%     1.  python code/simulation.py      → écrit data/*.csv
+%%     2.  compiler ce document           → tableaux, courbes et valeurs
+%%                                          sont lus directement dans les CSV
+%%  Montre : code Python inséré depuis le fichier réel (listings),
+%%  tableau et courbes lus depuis des CSV (pgfplotstable / pgfplots),
+%%  valeurs numériques du texte extraites des CSV, étude de convergence.
+%% =====================================================================
+
+% Valeurs lues dans data/resume.csv et data/tableau_periode.csv
+\pgfplotstableread[col sep=comma]{data/resume.csv}\tabresume
+\pgfplotstablegetelem{0}{ordre_observe}\of\tabresume \edef\OrdreObserve{\pgfplotsretval}
+\pgfplotstablegetelem{0}{erreur_min}\of\tabresume \edef\ErreurMin{\pgfplotsretval}
+\pgfplotstablegetelem{0}{erreur_max_pas_001}\of\tabresume \edef\ErreurMaxPas{\pgfplotsretval}
+\pgfplotstableread[col sep=comma]{data/tableau_periode.csv}\tabperiode
+\pgfplotstablegetelem{3}{T_rk4}\of\tabperiode \edef\TQuatreVingtDix{\pgfplotsretval}
+\pgfplotstablegetelem{6}{T_rk4}\of\tabperiode \edef\TCentSoixanteDix{\pgfplotsretval}
+\pgfplotstablegetelem{6}{T_serie}\of\tabperiode \edef\SerieCentSoixanteDix{\pgfplotsretval}
+
+%% ---------------------------------------------------------------------
+\begin{objectif}
+%% ---------------------------------------------------------------------
+Calculer numériquement la période $T$ d'un pendule simple lâché sans vitesse
+d'un angle $\theta_{0}$ quelconque, comparer le résultat à la valeur exacte et
+au développement en série, puis vérifier l'ordre de convergence de la méthode de
+Runge–Kutta d'ordre~4 (RK4) utilisée.
+\end{objectif}
+
+%% ---------------------------------------------------------------------
+\begin{modele}
+%% ---------------------------------------------------------------------
+L'angle $\theta$ d'un pendule simple de pulsation $\omega_{0}$ obéit à
+$\ddot\theta+\omega_{0}^{2}\sin\theta=0$. Avec le temps réduit
+$\tau=\omega_{0}t$, l'équation devient sans dimension :
+\begin{equation}
+  \dv[2]{\theta}{\tau} = -\sin\theta,
+  \qquad \theta(0)=\theta_{0},\quad \dv{\theta}{\tau}(0)=0 .
+  \label{eq:pendule}
+\end{equation}
+L'énergie réduite $\varepsilon=\tfrac12\bigl(\dv{\theta}{\tau}\bigr)^{2}-\cos\theta$
+est conservée, ce qui fournit un test de la simulation. La période exacte
+s'exprime à l'aide de l'intégrale elliptique complète $K$ ou de la
+moyenne arithmético-géométrique $\mathrm{AGM}$~\cite{landau1976} :
+\begin{equation}
+  \frac{T}{T_{0}}=\frac{2}{\pi}\,K\bigl(\sin\tfrac{\theta_{0}}{2}\bigr)
+  =\frac{1}{\mathrm{AGM}\bigl(1,\cos\tfrac{\theta_{0}}{2}\bigr)},
+  \qquad T_{0}=2\pi .
+  \label{eq:exacte}
+\end{equation}
+Pour les petites amplitudes, le développement en série s'écrit
+\begin{equation}
+  \frac{T}{T_{0}}=1+\frac{\theta_{0}^{2}}{16}+\frac{11\,\theta_{0}^{4}}{3072}
+  +\bigO{\theta_{0}^{6}} .
+  \label{eq:serie}
+\end{equation}
+\end{modele}
+
+%% ---------------------------------------------------------------------
+\begin{methode}
+%% ---------------------------------------------------------------------
+On pose $\vect{y}=(\theta,\ \mathrm{d}\theta/\mathrm{d}\tau)$ et
+$\vect{f}(\vect{y})=(y_{2},\,-\sin y_{1})$. Un pas de RK4 de longueur $h$ est
+\begin{equation}
+  \vect{y}_{n+1}=\vect{y}_{n}+\frac{h}{6}\bigl(\vect{k}_{1}+2\vect{k}_{2}+2\vect{k}_{3}+\vect{k}_{4}\bigr),
+  \label{eq:rk4}
+\end{equation}
+\begin{align}
+  \vect{k}_{1}&=\vect{f}(\vect{y}_{n}),
+  &\vect{k}_{2}&=\vect{f}\bigl(\vect{y}_{n}+\tfrac{h}{2}\vect{k}_{1}\bigr),\notag\\
+  \vect{k}_{3}&=\vect{f}\bigl(\vect{y}_{n}+\tfrac{h}{2}\vect{k}_{2}\bigr),
+  &\vect{k}_{4}&=\vect{f}\bigl(\vect{y}_{n}+h\,\vect{k}_{3}\bigr).
+\end{align}
+L'erreur globale de la méthode est en $\bigO{h^{4}}$. La période vaut quatre
+fois la durée du premier passage par $\theta=0$, localisée par bissection sur le
+dernier pas~(\cref{prog:rk4}).
+\end{methode}
+
+%% ---------------------------------------------------------------------
+\begin{implementation}
+%% ---------------------------------------------------------------------
+Le \cref{prog:rk4} est extrait directement du fichier \code|code/simulation.py| :
+toute modification du script est donc reprise à la prochaine compilation.
+Le script complet (bibliothèque standard de Python uniquement) écrit les fichiers
+\code|data/*.csv| lus ci-dessous.
+
+\codefile[first-line=22, last-line=47]{Python}{code/simulation.py}%
+  {Pas RK4 et calcul de la période (\texttt{code/simulation.py}).}{prog:rk4}
+\end{implementation}
+
+%% ---------------------------------------------------------------------
+\begin{resultats}
+%% ---------------------------------------------------------------------
+\subsection{Période en fonction de l'amplitude}
+
+Le \cref{tab:periode} compare la période calculée avec un pas $h=0{,}01$ à la
+valeur exacte~\eqref{eq:exacte} et au développement~\eqref{eq:serie}. Pour
+$\theta_{0}=\ang{90}$, on obtient $T/T_{0}=\num[round-mode=places,round-precision=5]{\TQuatreVingtDix}$.
+
+\begin{table}[htbp]
+  \caption{Période réduite $T/T_{0}$ (données : \texttt{data/tableau\_periode.csv}).}
+  \label{tab:periode}
+  \pgfplotstabletypeset[
+    fixed, fixed zerofill,
+    columns={theta0,T_rk4,T_exacte,T_serie,erreur_rel},
+    columns/theta0/.style={column name={$\theta_{0}$ (\unit{\degree})}, int detect, column type=r},
+    columns/T_rk4/.style={column name={RK4}, precision=6, column type=r},
+    columns/T_exacte/.style={column name={Exacte}, precision=6, column type=r},
+    columns/T_serie/.style={column name={Série~\eqref{eq:serie}}, precision=6, column type=r},
+    columns/erreur_rel/.style={column name={Erreur relative RK4}, sci10, precision=1, column type=r},
+  ]{data/tableau_periode.csv}
+\end{table}
+
+\begin{figure}[htbp]
+  \begin{subfigure}[b]{0.49\textwidth}
+    \begin{tikzpicture}
+      \begin{axis}[width=0.95\linewidth, height=5.6cm, xlabel={$\theta_{0}$ (\unit{\degree})},
+          ylabel={$T/T_{0}$}, xmin=0, xmax=180, ymin=0.9, ymax=3.4, grid=major,
+          xtick={0,45,90,135,180}, ytick={1,2,3},
+          legend pos=north west, scaled ticks=false]
+        \addplot[thick, color=DataBlue] table[x=theta0, y=T_exacte, col sep=comma]{data/periode.csv};
+        \addplot[only marks, mark=*, mark size=1.3pt, color=DataRed, mark repeat=2]
+          table[x=theta0, y=T_rk4, col sep=comma]{data/periode.csv};
+        \addplot[dashed, thick, color=TextColor] table[x=theta0, y=T_serie, col sep=comma]{data/periode.csv};
+        \legend{Exacte, RK4, Série}
+      \end{axis}
+    \end{tikzpicture}
+    \caption{Période réduite.}
+    \label{fig:periode}
+  \end{subfigure}\hfill
+  \begin{subfigure}[b]{0.49\textwidth}
+    \begin{tikzpicture}
+      \begin{loglogaxis}[width=0.95\linewidth, height=5.6cm, xlabel={$h$},
+          ylabel={Erreur relative sur $T$}, grid=major, legend pos=south east,
+          xtick={0.01,0.1,1}, xticklabels={$10^{-2}$,$10^{-1}$,$1$},
+          ytick={1e-10,1e-8,1e-6,1e-4}, yticklabels={$10^{-10}$,$10^{-8}$,$10^{-6}$,$10^{-4}$},
+          minor tick num=0]
+        \addplot[only marks, mark=*, mark size=1.5pt, color=DataRed]
+          table[x=h, y=erreur_rel, col sep=comma]{data/convergence.csv};
+        \addplot[dashed, thick, color=TextColor, domain=0.0125:0.4, samples=2]
+          {1.345e-10*(x/0.0125)^4};
+        \legend{RK4, pente $4$}
+      \end{loglogaxis}
+    \end{tikzpicture}
+    \caption{Convergence en $h$ ($\theta_{0}=\ang{60}$).}
+    \label{fig:convergence}
+  \end{subfigure}
+  \caption{Résultats de la simulation, tracés directement depuis les fichiers
+    CSV : (a) période en fonction de l'amplitude ; (b) erreur relative de RK4
+    en fonction du pas, en échelle logarithmique.}
+  \label{fig:resultats}
+\end{figure}
+\end{resultats}
+
+%% ---------------------------------------------------------------------
+\begin{validation}
+%% ---------------------------------------------------------------------
+Pour $\theta_{0}=\ang{60}$, l'erreur relative décroît de
+$\num{1.3e-4}$ ($h=0{,}4$) à $\num[round-mode=figures,round-precision=2]{\ErreurMin}$
+($h=0{,}0125$). La pente de $\log(\text{erreur})$ en fonction de $\log h$, ajustée
+sur les six pas, vaut
+\begin{equation}
+  p=\num{\OrdreObserve},
+  \label{eq:ordre}
+\end{equation}
+en accord avec l'ordre théorique $4$ de RK4 (\cref{fig:convergence}).
+\end{validation}
+
+%% ---------------------------------------------------------------------
+\begin{analyse}
+%% ---------------------------------------------------------------------
+\paragraph{Qualité de la simulation.}
+Avec $h=0{,}01$, l'erreur relative sur $T$ reste inférieure à
+$\num[round-mode=figures,round-precision=1]{\ErreurMaxPas}$ pour toutes les amplitudes
+de \ang{5} à \ang{170} : la précision est limitée par l'arithmétique en double
+précision plutôt que par la méthode.
+
+\paragraph{Validité du développement en série.}
+La série~\eqref{eq:serie} reproduit la période à mieux que \num{1e-3} jusqu'à environ
+\ang{60}, mais s'en écarte fortement ensuite : pour $\theta_{0}=\ang{170}$ elle
+donne $T/T_{0}=\num[round-mode=places,round-precision=2]{\SerieCentSoixanteDix}$ contre
+$\num[round-mode=places,round-precision=2]{\TCentSoixanteDix}$ pour la valeur exacte, soit une
+sous-estimation d'environ \qty{25}{\percent}. La période diverge lorsque
+$\theta_{0}\to\pi$ (pendule lâché au voisinage de la position d'équilibre
+instable), ce qu'aucun développement polynomial ne peut représenter.
+\end{analyse}
+
+%% ---------------------------------------------------------------------
+\begin{conclusion}
+%% ---------------------------------------------------------------------
+L'intégration RK4 reproduit la période exacte du pendule non linéaire avec un
+ordre de convergence mesuré $p=\num{\OrdreObserve}$. Le développement en série
+n'est fiable que pour les amplitudes modérées. La chaîne
+« script Python $\to$ fichiers CSV $\to$ document \LaTeX{} » garantit que les
+tableaux, les courbes et les valeurs citées proviennent toujours de la
+dernière exécution du programme.
+\end{conclusion}

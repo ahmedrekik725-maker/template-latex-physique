@@ -1,0 +1,173 @@
+% !TeX encoding = UTF-8
+% !TeX TXS-program:compile = txs:///latexmk
+%% =====================================================================
+%%  aide-memoire.tex — Aide-mémoire d'UNE page : toutes les commandes.
+%%  À imprimer ou garder ouvert pendant la rédaction.
+%%  (\cmd~…~ affiche du code littéral ; le délimiteur ~ ne doit pas
+%%   apparaître dans le code affiché.)
+%% =====================================================================
+\documentclass[a4paper,10pt]{scrartcl}
+\input{style/preamble}
+\input{style/macros}
+\geometry{left=1.2cm,right=1.2cm,top=0.5cm,bottom=0.6cm,headheight=15pt,headsep=0pt,footskip=0pt}
+\raggedbottom
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\linespread{1}
+\emergencystretch=3em
+\setlength{\tabcolsep}{1pt}
+
+\newcommand{\cheatsize}{\fontsize{8}{9.4}\selectfont}
+\newcommand{\sect}[1]{\par\vspace{0.5em}{\sffamily\bfseries\small #1}\par\vspace{-0.2em}{\color{RuleColor}\rule{\linewidth}{0.4pt}}\par\vspace{0.1em}}
+\newcommand{\cmd}{\cheatsize\verb}                 % code littéral : \cmd~\vect{v}~
+\newcommand{\w}[1]{\texttt{\cheatsize #1}}         % mots simples (clés, noms d'environnements)
+\newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newenvironment{tbl}[1]{\cheatsize\renewcommand{\arraystretch}{1.1}\begin{tabular}{@{}#1@{}}}{\end{tabular}\par}
+
+\begin{document}
+\nocite{griffiths2018}\raggedright   % évite l'avertissement Biber « aucune citation »
+{\sffamily\bfseries\Large Aide-mémoire}\hfill
+{\sffamily\small Template physique (LuaLaTeX + Biber) — compiler : \textbf{F5} ou \texttt{compiler.bat}}\par
+\vspace{-0.2em}{\color{TextColor}\rule{\linewidth}{0.8pt}}\par\vspace{0.1em}
+
+%% ============================ COLONNE GAUCHE ============================
+\begin{minipage}[t]{0.465\textwidth}
+\cheatsize
+
+\sect{1. Nouveau travail}
+\begin{tbl}{P{8.4cm}}
+Copier \cmd~main.tex~, le renommer, régler \cmd~\docsetup{…}~ en haut du fichier.\\
+Identité et logo : \cmd~config.tex~ (une seule fois).\\
+Compiler : \textbf{F5} (TeXstudio) ou double-clic \cmd~compiler.bat~.\\
+Simulation : \cmd~python code/simulation.py~ puis compiler.\\
+\end{tbl}
+
+\sect{2. Clés de \texttt{\textbackslash docsetup}}
+\begin{tbl}{P{2.9cm}P{5.5cm}}
+\w{type} & \w{assignment}, \w{tp}, \w{simulation}, \w{rapport}\\
+\w{titre soustitre} & titre et sous-titre ; \w{titrecourt} : en-tête de page\\
+\w{cours enseignant} & module, enseignant\\
+\w{date} & \cmd~{\today}~ par défaut\\
+\w{numero} & numéro du TP / de la simulation\\
+\w{binome groupe seance} & pour le type \w{tp}\\
+\w{titlestyle} & \w{block} (compact) ou \w{page}\\
+\w{brouillon} & \w{true} : filigrane BROUILLON\\
+\w{logo} & chemin de l'image (vide = aucun)\\
+\w{etudiant universite faculte departement filiere annee} & identité, dans \w{config.tex}\\
+\w{typelabel} & impose l'intitulé du type\\
+\end{tbl}
+
+\sect{3. Blocs de section (numérotés)}
+\begin{tbl}{P{2.0cm}P{6.4cm}}
+TP & \w{objectif materiel principe protocole resultats analyse conclusion}\\
+Simulation & \w{objectif modele methode implementation resultats validation analyse conclusion}\\
+Variantes & \cmd~\begin{principe}[Titre]~ titre libre ;\ \cmd~\begin{objectif*}~ non numéroté\\
+\end{tbl}
+
+\sect{4. Environnements}
+\begin{tbl}{P{2.0cm}P{6.4cm}}
+Énoncés & \w{definition theoreme lemme proposition corollaire} ; titre : \cmd~[Titre]~\\
+Commentaires & \w{remarque exemple} (numérotés), \w{note} (non numérotée)\\
+Preuve & \w{demonstration} ; fin automatique, ou \cmd~\qedhere~\\
+Devoir & \w{exercice} \cmd~[Titre]~, \w{question} \cmd~[3 pts]~, \w{solution} \cmd~[Réponse]~\\
+Résumé & \w{resume}\\
+\end{tbl}
+
+\sect{5. Références croisées et bibliographie}
+\begin{tbl}{P{3.0cm}P{5.4cm}}
+\cmd~\label{eq:x}~ & juste \emph{après} \cmd~\begin{…}~ ou \cmd~\caption~\\
+\cmd~\cref{eq:x}~ & « équation (1.2) » ; \cmd~\Cref~ en début de phrase\\
+\cmd~\eqref{eq:x}~ & « (1.2) » seul\\
+\cmd~\cref{a,b}~ & « équations (1.2) et (1.3) »\\
+\cmd~\cite{cle}~ & [1] ; entrée dans \w{references.bib}\\
+\end{tbl}
+
+\sect{6. Figures, tableaux, code}
+\begin{tbl}{P{1.4cm}P{7.0cm}}
+Image & \cmd~\includegraphics{courbe}~ (dossier \w{figures/})\\
+Figure & \cmd~\begin{figure}[htbp]~, \cmd~\caption~, \cmd~\label~\\
+Sous-fig. & \cmd~\begin{subfigure}[b]{0.48\textwidth}~\\
+Tableau & colonnes \cmd~S[table-format=3.1]~, lignes \cmd~\toprule~ \cmd~\midrule~ \cmd~\bottomrule~\\
+CSV & \cmd~\pgfplotstabletypeset{f.csv}~ ; options \w{fixed, fixed zerofill}\\
+Courbe & \cmd~\addplot table[x=a,y=b]{f.csv}~\\
+Code & \cmd~\codefile{Python}{f.py}{Légende}{prog:x}~ ; langages \w{Python C Matlab OCaml SQL} ; extrait : \cmd~[first-line=22,last-line=47]~\\
+En ligne & \cmd~\code|x = 3|~ ; \cmd~\cref{prog:x}~ : « programme 1 »\\
+Solution & figure : \cmd~\captionof{figure}{…}~\\
+Notes & \cmd~\footnote{…}~ ; tableau : \cmd~threeparttable~, \cmd~\tnote{a}~, \w{tablenotes} ; crédit : \cmd~\source{…}~\\
+\end{tbl}
+
+\sect{7. Pièges courants}
+\begin{tbl}{P{8.4cm}}
+Compiler avec latexmk / LuaLaTeX, jamais pdfLaTeX.\\
+\w{[?]} ou \w{??} dans le PDF : relancer (latexmk le fait seul).\\
+Nombres : toujours le \textbf{point} dans le code, \cmd~\num{0.5}~ ; la sortie est en virgule.\\
+Macros mathématiques : seulement en mode math (\cmd~$…$~).\\
+Pas de ligne vide ni de \cmd~\code|…|~ dans les légendes.\\
+\end{tbl}
+\end{minipage}\hfill
+%% ============================ COLONNE DROITE ============================
+\begin{minipage}[t]{0.515\textwidth}
+\cheatsize
+
+\sect{8. Notations}
+\begin{tbl}{l@{\enspace}l@{\qquad}l@{\enspace}l}
+\cmd~\vect{v}~ & $\vect{v}$ & \cmd~\mat{A}~ & $\mat{A}$\\
+\cmd~\uvect{n}~ & $\uvect{n}$ & \cmd~\tens{T}_{ij}~ & $\tens{T}_{ij}$\\
+\cmd~\op{H}~ & $\op{H}$ & \cmd~\op{a}\adj~ & $\op{a}\adj$\\
+\cmd~z\cc~ & $z\cc$ & \cmd~\mat{A}\transpose~ & $\mat{A}\transpose$\\
+\cmd~\ii \ee \dd~ & $\ii\ \ee\ \dd$ & \cmd~\RR \CC \NN~ & $\RR\ \CC\ \NN$\\
+\cmd~\ex \ey \ez~ & $\ex\ \ey\ \ez$ & \cmd~\er \etheta \ephi~ & $\er\ \etheta\ \ephi$\\
+\end{tbl}
+
+\sect{9. Dérivées et opérateurs différentiels}
+\begin{tbl}{l@{\enspace}l@{\qquad}l@{\enspace}l}
+\cmd~\dv{f}{x}~ & $\dv{f}{x}$ & \cmd~\dv[2]{f}{x}~ & $\dv[2]{f}{x}$\\
+\cmd~\pdv{f}{x}~ & $\pdv{f}{x}$ & \cmd~\pdv[2]{f}{x}~ & $\pdv[2]{f}{x}$\\
+\cmd~\pdv{f}{x}{y}~ & $\pdv{f}{x}{y}$ & \cmd~\fdv{S}{q}~ & $\fdv{S}{q}$\\
+\cmd~\grad f~ & $\grad f$ & \cmd~\lapl f~ & $\lapl f$\\
+\cmd~\diverg\vect{E}~ & $\diverg\vect{E}$ & \cmd~\curl\vect{B}~ & $\curl\vect{B}$\\
+\end{tbl}
+
+\sect{10. Mécanique quantique}
+\begin{tbl}{l@{\enspace}l@{\qquad}l@{\enspace}l}
+\cmd~\ket{\psi}~ & $\ket{\psi}$ & \cmd~\bra{\psi}~ & $\bra{\psi}$\\
+\cmd~\braket{a}{b}~ & $\braket{a}{b}$ & \cmd~\ketbra{a}{b}~ & $\ketbra{a}{b}$\\
+\cmd~\comm{A}{B}~ & $\comm{A}{B}$ & \cmd~\acomm{A}{B}~ & $\acomm{A}{B}$\\
+\cmd~\poisson{f}{g}~ & $\poisson{f}{g}$ & \cmd~\pscal{a}{b}~ & $\pscal{a}{b}$\\
+\cmd~\ev{\op{A}}~ & $\ev{\op{A}}$ & \cmd~\ev{\op{A}}{\psi}~ & $\ev{\op{A}}{\psi}$\\
+\end{tbl}
+\begin{tbl}{l@{\enspace}l}
+\cmd~\mel{m}{\op{A}}{n}~ & $\mel{m}{\op{A}}{n}$\qquad \cmd~\ev*{…}{…}~ : taille automatique\\
+\end{tbl}
+
+\sect{11. Divers mathématiques}
+\begin{tbl}{l@{\enspace}l@{\qquad}l@{\enspace}l}
+\cmd~\abs{x}~ & $\abs{x}$ & \cmd~\abs*{\frac{a}{b}}~ & $\abs*{\frac{a}{b}}$\\
+\cmd~\norm{\vect{v}}~ & $\norm{\vect{v}}$ & \cmd~\abs[\big]{x}~ & $\abs[\big]{x}$\\
+\cmd~a\dotp b~ & $a\dotp b$ & \cmd~a\crossp b~ & $a\crossp b$\\
+\cmd~\Tr \sgn \diag~ & $\Tr\ \sgn\ \diag$ & \cmd~\Reel z \Imag z~ & $\Reel z\ \Imag z$\\
+\cmd~\bigO{x^3}~ & $\bigO{x^{3}}$ & \cmd~\hc~ & $\hc$\\
+\end{tbl}
+\par\vspace{0.1em}\cheatsize amsmath : \w{align gather cases} ; \cmd~\notag~ supprime un numéro.
+
+\sect{12. Unités et incertitudes}
+\begin{tbl}{l@{\enspace}l}
+\cmd~\qty{9.81}{m.s^{-2}}~ & \qty{9.81}{m.s^{-2}}\\
+\cmd~\qtyerr{9.75}{0.06}{m.s^{-2}}~ & \qtyerr{9.75}{0.06}{m.s^{-2}}\\
+\cmd~\qtyrange{1}{5}{nm}~ & \qtyrange{1}{5}{nm}\\
+\cmd~\num{1.2e-3}~ \ \cmd~\ang{30}~ & \num{1.2e-3}\quad\ang{30}\\
+\cmd~\unit{\wavenumber}~ \ \cmd~\unit{eV}~ & \unit{\wavenumber}\quad\unit{eV}\\
+\cmd~\incert{g}~ \ \cmd~\incertrel{g}~ & $\incert{g}$\quad $\incertrel{g}$\\
+\cmd~\ecartnorm{a}{b}~ & $\ecartnorm{a}{b}$\\
+\end{tbl}
+
+\sect{13. Compiler (dossier du projet)}
+\begin{tbl}{l@{\ }P{5.0cm}}
+\cmd~compiler.bat~ & compile \w{main.tex}, vérifie, ouvre le PDF\\
+\cmd~compiler.bat exemple-B-tp~ & compile un autre fichier\\
+\cmd~compiler.bat nettoyer~ & supprime les fichiers auxiliaires\\
+\cmd~latexmk fichier.tex~ & équivalent en ligne de commande\\
+\end{tbl}
+\end{minipage}
+
+\end{document}

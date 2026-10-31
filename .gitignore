@@ -1,0 +1,39 @@
+# Fichiers auxiliaires LaTeX / Biber / latexmk
+*.aux
+*.log
+*.out
+*.toc
+*.bbl
+*.bcf
+*.blg
+*.run.xml
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.synctex(busy)
+*.pyg
+*.listing
+*.lof
+*.lot
+*.nav
+*.snm
+*.vrb
+*-blx.bib
+_minted*/
+chk_*
+
+# Python
+__pycache__/
+*.pyc
+
+# Windows / éditeurs
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# Claude Code (réglages locaux)
+.claude/
+
+# Notes internes (non publiées)
+CLAUDE.md

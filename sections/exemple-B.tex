@@ -1,0 +1,313 @@
+% !TeX root = ../exemple-B-tp.tex
+% !TeX encoding = UTF-8
+%% =====================================================================
+%%  Exemple B — Compte rendu de travaux pratiques
+%%  Sujet : mesure de l'accélération de la pesanteur avec un pendule simple.
+%%  Montre : blocs de TP (objectif, principe, protocole, résultats,
+%%  analyse, conclusion), tableaux de mesures (siunitx S, booktabs,
+%%  tabularx), figure à sous-figures (schéma TikZ + courbe pgfplots),
+%%  exemple de calcul avec unités, propagation d'incertitudes.
+%%
+%%  ATTENTION : toutes les valeurs numériques ci-dessous sont FICTIVES.
+%%  Elles servent uniquement à illustrer la mise en forme.
+%% =====================================================================
+
+\begin{note}[Données d'illustration]
+  Les mesures de ce compte rendu sont fictives : elles montrent la mise en
+  page d'un TP, pas le résultat d'une expérience réelle.
+\end{note}
+
+%% ---------------------------------------------------------------------
+\begin{objectif}
+%% ---------------------------------------------------------------------
+Déterminer l'accélération de la pesanteur $g$ à partir de la période d'un
+pendule simple, en faisant varier sa longueur $L$, et estimer l'incertitude
+associée au résultat. On compare ensuite la valeur obtenue à la valeur
+conventionnelle $g_{n}=\qty{9.80665}{\metre\per\second\squared}$.
+\end{objectif}
+
+%% ---------------------------------------------------------------------
+\begin{principe}
+%% ---------------------------------------------------------------------
+Un pendule simple de longueur $L$, écarté d'un angle initial $\theta_{0}$,
+oscille avec la période
+\begin{equation}
+  T = 2\pi\sqrt{\frac{L}{g}}\,\Bigl(1+\frac{\theta_{0}^{2}}{16}
+      +\bigO{\theta_{0}^{4}}\Bigr),
+  \label{eq:periode}
+\end{equation}
+où la correction entre parenthèses, due à l'amplitude finie, est négligeable
+pour $\theta_{0}\lesssim\ang{10}$ (voir \cref{sec:discussion}). Au
+premier ordre, \cref{eq:periode} se linéarise en
+\begin{equation}
+  T^{2} = a\,L,
+  \qquad a=\frac{4\pi^{2}}{g},
+  \qquad\text{d'où}\qquad
+  g=\frac{4\pi^{2}}{a}.
+  \label{eq:lineaire}
+\end{equation}
+Tracer $T^{2}$ en fonction de $L$ et ajuster une droite permet donc
+d'obtenir $g$ à partir de la pente $a$, sans connaître exactement
+l'origine des longueurs.
+\end{principe}
+
+%% ---------------------------------------------------------------------
+\begin{protocole}
+%% ---------------------------------------------------------------------
+\subsection{Matériel}
+
+Le matériel utilisé et la résolution de chaque instrument sont rassemblés
+dans le \cref{tab:instruments}.
+
+\begin{table}[htbp]
+  \caption{Instruments de mesure et résolutions.}
+  \label{tab:instruments}
+  \begin{tabularx}{\linewidth}{@{}l Y l@{}}
+    \toprule
+    Instrument & Grandeur mesurée & Résolution \\
+    \midrule
+    Règle graduée      & Longueur $L$ (point d'attache $\to$ centre de la masse) & \qty{1}{\milli\metre} \\
+    Chronomètre manuel & Durée $t_{10}$ de dix oscillations                      & \qty{0.01}{\second} \\
+    Rapporteur         & Angle initial $\theta_{0}$                              & \ang{1} \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\subsection{Mode opératoire}
+
+\begin{enumerate}
+  \item Fixer le fil au support et ajuster la longueur $L$ (de \qty{30}{\centi\metre} à \qty{100}{\centi\metre}, par pas de \qty{10}{\centi\metre}).
+  \item Écarter la masse d'un angle $\theta_{0}\approx\ang{10}$ et la lâcher sans vitesse initiale.
+  \item Mesurer la durée $t_{10}$ de dix oscillations complètes ; en déduire $T=t_{10}/10$.
+  \item Reporter les mesures dans le \cref{tab:mesures} et recommencer pour chaque longueur.
+\end{enumerate}
+\end{protocole}
+
+%% ---------------------------------------------------------------------
+\begin{resultats}
+%% ---------------------------------------------------------------------
+\subsection{Mesures}
+
+Le \cref{tab:mesures} donne les durées mesurées, avec $T=t_{10}/10$. Les
+incertitudes-types ont été estimées comme suit : $u(L)=\qty{0.2}{\centi\metre}$
+(lecture de la règle et repérage du centre de la masse\footnote{Le centre de la masse est
+repéré au demi-millimètre près ; l'incertitude retenue est volontairement plus large.}) et
+$u(t_{10})=\qty{0.15}{\second}$ (temps de réaction de l'opérateur), d'où
+$u(T)=u(t_{10})/10=\qty{0.015}{\second}$.
+
+\begin{table}[htbp]
+  \caption{Durée $t_{10}$ de dix oscillations en fonction de la longueur $L$
+    ($\theta_{0}\approx\ang{10}$).}
+  \label{tab:mesures}
+  \begin{threeparttable}
+    \begin{tabular}{S[table-format=3.1] S[table-format=2.2] S[table-format=1.3]
+                    S[table-format=1.3] S[table-format=1.3]}
+      \toprule
+      {$L$ (\unit{\centi\metre})} & {$t_{10}$ (\unit{\second})} & {$T$ (\unit{\second})\tnote{a}}
+        & {$T^{2}$ (\unit{\second\squared})} & {$u(T^{2})$ (\unit{\second\squared})\tnote{b}} \\
+      \midrule
+       30.0 & 10.98 & 1.098 & 1.206 & 0.033 \\
+       40.0 & 12.71 & 1.271 & 1.615 & 0.038 \\
+       50.0 & 14.17 & 1.417 & 2.008 & 0.043 \\
+       60.0 & 15.52 & 1.552 & 2.409 & 0.047 \\
+       70.0 & 16.72 & 1.672 & 2.796 & 0.050 \\
+       80.0 & 17.93 & 1.793 & 3.215 & 0.054 \\
+       90.0 & 19.12 & 1.912 & 3.656 & 0.057 \\
+      100.0 & 20.09 & 2.009 & 4.036 & 0.060 \\
+      \bottomrule
+    \end{tabular}
+    \begin{tablenotes}[flushleft]\footnotesize
+      \item[a] $T=t_{10}/10$.
+      \item[b] $u(T^{2})=2\,T\,u(T)$, avec $u(T)=\qty{0.015}{\second}$.
+    \end{tablenotes}
+  \end{threeparttable}
+\end{table}
+
+\subsection{Exemple de calcul}
+
+Pour la longueur $L=\qty{100.0}{\centi\metre}$, on mesure
+$t_{10}=\qty{20.09}{\second}$, donc
+\begin{align}
+  T   &= \frac{t_{10}}{10} = \frac{\qty{20.09}{\second}}{10} = \qty{2.009}{\second},
+  \label{eq:calcT}\\
+  g   &= \frac{4\pi^{2}L}{T^{2}}
+       = \frac{4\pi^{2}\times\qty{1.000}{\metre}}{(\qty{2.009}{\second})^{2}}
+       = \qty{9.78}{\metre\per\second\squared}.
+  \label{eq:calcg}
+\end{align}
+L'incertitude relative composée vaut
+\begin{equation}
+  \incertrel{g}=\sqrt{\Bigl(\frac{u(L)}{L}\Bigr)^{2}+\Bigl(\frac{2\,u(T)}{T}\Bigr)^{2}}
+  =\sqrt{(\num{0.0020})^{2}+(\num{0.0149})^{2}}=\num{0.015},
+  \label{eq:uponctuel}
+\end{equation}
+soit $g=\qtyerr{9.78}{0.15}{\metre\per\second\squared}$ pour cette seule
+mesure.
+
+\subsection{Ajustement linéaire}
+
+Les points $(L,T^{2})$ sont représentés sur la \cref{fig:regression}, avec la
+droite $T^{2}=aL+b$ obtenue par moindres carrés ordinaires sur les huit
+points. Les résultats de l'ajustement sont réunis dans le \cref{tab:ajustement}.
+
+\begin{figure}[htbp]
+  \begin{subfigure}[b]{0.34\textwidth}
+    \centering
+    \begin{tikzpicture}[>=Stealth, line cap=round, scale=0.78]
+      \def\Lr{3.4}
+      \coordinate (O) at (0,0);
+      \coordinate (V) at (0,-\Lr);
+      \coordinate (M) at ({\Lr*sin(24)},{-\Lr*cos(24)});
+      \draw[line width=0.8pt, TextColor] (-1.1,0)--(1.1,0);
+      \foreach \x in {-1.0,-0.7,...,1.0}
+        \draw[line width=0.4pt, MutedColor] (\x,0)--(\x+0.18,0.2);
+      \draw[dashed, MutedColor, line width=0.4pt] (O)--(V);
+      \draw[line width=0.6pt, TextColor] (O)--(M);
+      \fill[DataBlue] (M) circle (0.17);
+      \pic[draw=DataBlue, line width=0.5pt, angle radius=1.3cm,
+           "$\theta_{0}$", angle eccentricity=1.35] {angle=V--O--M};
+      \draw[<->, line width=0.4pt, MutedColor]
+        ($(O)+({0.5*cos(24)},{0.5*sin(24)})$) --
+        node[midway, fill=white, inner sep=1pt] {\footnotesize$L$}
+        ($(M)+({0.5*cos(24)},{0.5*sin(24)})$);
+      \draw[->, line width=0.7pt, MutedColor] (-1.7,-1.2)--(-1.7,-2.6)
+        node[midway, left] {\footnotesize$\vect{g}$};
+    \end{tikzpicture}
+    \caption{Schéma du dispositif.}
+    \label{fig:schema}
+  \end{subfigure}\hfill
+  \begin{subfigure}[b]{0.62\textwidth}
+    \centering
+    \begin{tikzpicture}
+      \begin{axis}[
+          width=\linewidth, height=6.1cm,
+          xlabel={$L$ (\unit{\metre})}, ylabel={$T^{2}$ (\unit{\second\squared})},
+          xmin=0.2, xmax=1.1, ymin=0.6, ymax=4.6,
+          grid=major, legend pos=north west,
+          scaled ticks=false,
+          /pgf/number format/use comma,
+        ]
+        \addplot[only marks, mark=*, mark size=1.6pt, color=DataBlue,
+                 error bars/.cd, y dir=both, y explicit,
+                 error bar style={line width=0.4pt, color=DataBlue},
+                 error mark options={rotate=90, mark size=2pt}]
+          table[x=L, y=T2, y error=u, col sep=space] {
+            L    T2     u
+            0.30 1.206  0.033
+            0.40 1.615  0.038
+            0.50 2.008  0.043
+            0.60 2.409  0.047
+            0.70 2.796  0.050
+            0.80 3.215  0.054
+            0.90 3.656  0.057
+            1.00 4.036  0.060
+          };
+        \addplot[domain=0.22:1.08, samples=2, thick, color=DataRed]
+          {4.0503*x - 0.0152};
+        \legend{Mesures, Ajustement}
+      \end{axis}
+    \end{tikzpicture}
+    \caption{$T^{2}$ en fonction de $L$ et ajustement linéaire.}
+    \label{fig:regression}
+  \end{subfigure}
+  \caption{Pendule simple : (a) schéma du montage, avec l'angle initial
+    $\theta_{0}$ et le champ de pesanteur $\vect{g}$ ; (b) mesures de
+    $T^{2}$ avec barres d'incertitude $\pm u(T^{2})$ et droite de régression.}
+  \label{fig:pendule}
+\end{figure}
+
+\begin{table}[htbp]
+  \caption{Résultats de l'ajustement $T^{2}=aL+b$ (huit points, six degrés de liberté).}
+  \label{tab:ajustement}
+  \begin{tabular}{@{}l l l@{}}
+    \toprule
+    Grandeur & Expression & Valeur \\
+    \midrule
+    Pente $a$              & $\dfrac{n\sum L_i T_i^{2}-\sum L_i\sum T_i^{2}}{\Delta}$
+                           & \qtyerr{4.050}{0.025}{\second\squared\per\metre} \\[2.4ex]
+    Ordonnée $b$           & $\dfrac{\sum T_i^{2}-a\sum L_i}{n}$
+                           & \qtyerr{-0.015}{0.017}{\second\squared} \\[2.4ex]
+    Écart-type résiduel $s$ & $\sqrt{\sum r_i^{2}/(n-2)}$
+                           & \qty{0.016}{\second\squared} \\[1.6ex]
+    Accélération $g$       & $4\pi^{2}/a$
+                           & \qtyerr{9.75}{0.06}{\metre\per\second\squared} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+\end{resultats}
+
+%% ---------------------------------------------------------------------
+\begin{analyse}
+%% ---------------------------------------------------------------------
+\subsection{Analyse des incertitudes}
+
+Avec $\Delta=n\sum L_i^{2}-\bigl(\sum L_i\bigr)^{2}$ et $r_i=T_i^{2}-aL_i-b$
+les résidus, les incertitudes-types de la droite de régression sont
+\begin{equation}
+  s^{2}=\frac{1}{n-2}\sum_{i=1}^{n}r_i^{2},
+  \qquad
+  u(a)=s\sqrt{\frac{n}{\Delta}},
+  \qquad
+  u(b)=s\sqrt{\frac{\sum L_i^{2}}{\Delta}} .
+  \label{eq:regression}
+\end{equation}
+Comme $g=4\pi^{2}/a$, la propagation à une seule variable donne
+\begin{equation}
+  \incertrel{g}=\frac{u(a)}{a}
+  \quad\Longrightarrow\quad
+  u(g)=g\,\frac{u(a)}{a}
+  =\qty{9.75}{\metre\per\second\squared}\times\frac{\qty{0.025}{\second\squared\per\metre}}{\qty{4.050}{\second\squared\per\metre}}
+  =\qty{0.06}{\metre\per\second\squared}.
+  \label{eq:ug}
+\end{equation}
+Le résultat final est donc
+\begin{equation}
+  g=\qtyerr{9.75}{0.06}{\metre\per\second\squared}.
+  \label{eq:gfinal}
+\end{equation}
+
+\subsection{Discussion}\label{sec:discussion}
+
+\paragraph{Comparaison avec la valeur de référence.}
+L'écart normalisé entre \cref{eq:gfinal} et la valeur conventionnelle $g_{n}$ est
+\begin{equation}
+  E_{n}=\ecartnorm{g}{g_{n}}\approx
+  \frac{\abs{\qty{9.75}{\metre\per\second\squared}-\qty{9.80665}{\metre\per\second\squared}}}
+       {\qty{0.06}{\metre\per\second\squared}}\approx\num{1.0}.
+  \label{eq:En}
+\end{equation}
+En prenant $u(g_{n})=0$, ce résultat est compatible avec la valeur de
+référence au niveau de confiance usuel ($E_{n}<2$). Le protocole
+d'évaluation suit le \emph{Guide pour l'expression de
+l'incertitude de mesure}~\cite{jcgm2008} ; voir aussi \cite{taylor1997}.
+
+\paragraph{Cohérence des incertitudes.}
+L'écart-type résiduel ($s=\qty{0.016}{\second\squared}$) est environ trois fois
+inférieur aux incertitudes propagées $u(T^{2})\in[\num{0.033},\num{0.060}]\,\unit{\second\squared}$
+du \cref{tab:mesures} : l'estimation $u(t_{10})=\qty{0.15}{\second}$ du temps
+de réaction est donc probablement trop prudente. L'incertitude finale, calculée
+à partir de la dispersion des points (\cref{eq:regression}), est plus
+réaliste que celle qu'on obtiendrait en propageant directement les
+incertitudes de type~B.
+
+\paragraph{Erreurs systématiques.}
+La correction d'amplitude de \cref{eq:periode} allonge la période mesurée de
+$\theta_{0}^{2}/16\approx\num{0.2}\,\%$ pour $\theta_{0}=\ang{10}$, ce qui
+sous-estime $g$ d'environ $\theta_{0}^{2}/8\approx\num{0.4}\,\%$, soit
+\qty{0.04}{\metre\per\second\squared}. Cette correction reste inférieure à
+$u(g)$ mais deviendrait significative pour une mesure plus précise. Les
+autres sources possibles sont la masse non nulle du fil, les dimensions finies
+de la masse suspendue et les frottements de l'air.
+\end{analyse}
+
+%% ---------------------------------------------------------------------
+\begin{conclusion}
+%% ---------------------------------------------------------------------
+La méthode de linéarisation $T^{2}=(4\pi^{2}/g)\,L$ a fourni
+$g=\qtyerr{9.75}{0.06}{\metre\per\second\squared}$, compatible avec la valeur
+de référence $g_{n}$ (écart normalisé $\approx1$). L'ajustement sur huit longueurs
+réduit l'incertitude par rapport à une mesure ponctuelle
+(\cref{eq:uponctuel} : \qty{0.15}{\metre\per\second\squared}). Pour améliorer
+la précision, on pourrait chronométrer vingt oscillations, réduire l'amplitude
+initiale et appliquer la correction d'amplitude.
+\end{conclusion}

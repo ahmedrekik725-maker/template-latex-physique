@@ -1,0 +1,218 @@
+% !TeX encoding = UTF-8
+%% =====================================================================
+%%  style/titre.tex — Informations du document (\docsetup) et mise en page
+%%  du titre : bandeau [logo | institution | type de document], titre
+%%  compact (par défaut) ou page de titre complète.
+%%  Chargé automatiquement par style/preamble.tex. À ne pas modifier.
+%%
+%%  \docsetup{clé = valeur, …}
+%%    - identité permanente  → config.tex  (une seule fois)
+%%    - infos du document    → début du fichier .tex de chaque travail
+%%  Clés : type titlestyle logo brouillon etudiant universite faculte
+%%         departement filiere annee cours enseignant titre titrecourt
+%%         soustitre date numero binome groupe seance typelabel
+%% =====================================================================
+
+\pgfkeys{
+  /doc/.is family, /doc,
+  type/.store in             = \docType,
+  titlestyle/.store in       = \docTitleStyle,
+  logo/.store in             = \docLogo,
+  brouillon/.store in        = \docDraft,
+  etudiant/.store in         = \docEtudiant,
+  universite/.store in       = \docUniversite,
+  faculte/.store in          = \docFaculte,
+  departement/.store in      = \docDepartement,
+  filiere/.store in          = \docFiliere,
+  annee/.store in            = \docAnnee,
+  cours/.store in            = \docCours,
+  enseignant/.store in       = \docEnseignant,
+  titre/.store in            = \docTitre,
+  titrecourt/.store in       = \docTitreCourt,
+  soustitre/.store in        = \docSousTitre,
+  date/.store in             = \docDate,
+  numero/.store in           = \docNumero,
+  binome/.store in           = \docBinome,
+  groupe/.store in           = \docGroupe,
+  seance/.store in           = \docSeance,
+  typelabel/.store in        = \docTypeLabel,
+}
+
+% \docsetup accepte lignes vides et commentaires : les \par éventuels sont
+% retirés avant d'être transmis à pgfkeys (qui, lui, ne les supporte pas).
+\ExplSyntaxOn
+\newcommand{\docsetup}[1]{%
+  \tl_set:Nn \l_tmpa_tl {#1}
+  \tl_remove_all:Nn \l_tmpa_tl {\par}
+  \tl_put_left:Nn \l_tmpa_tl {/doc/.cd,}
+  \exp_args:NV \pgfkeys \l_tmpa_tl
+}
+\ExplSyntaxOff
+
+% Valeurs par défaut (toute clé non renseignée est simplement omise)
+\docsetup{type=assignment, titlestyle=block, logo={}, brouillon=false,
+  etudiant={}, universite={}, faculte={}, departement={}, filiere={}, annee={},
+  cours={}, enseignant={}, titre={Titre du document}, titrecourt={},
+  soustitre={}, date={\today}, numero={}, binome={}, groupe={}, seance={},
+  typelabel={}}
+
+%% ---------------------------------------------------------------------
+%%  Outils internes
+%% ---------------------------------------------------------------------
+\newcommand*{\ifdoctype}[1]{\ifdefstring{\docType}{#1}}
+
+% Intitulé du type, volontairement COURT (modifiable avec la clé typelabel)
+\newcommand*{\docTypeName}{%
+  \ifdefempty{\docTypeLabel}
+    {\ifdoctype{tp}{Compte rendu}
+      {\ifdoctype{simulation}{Compte rendu}
+        {\ifdoctype{rapport}{Rapport}{Devoir à la maison}}}}
+    {\docTypeLabel}}
+
+\newcommand*{\docHeaderLeft}{\ifdefempty{\docTitreCourt}{\docTitre}{\docTitreCourt}}
+\newcommand*{\docHeaderRight}{\docCours}
+
+% Logo facultatif : fichier introuvable → avertissement, titre sans logo
+\newbool{doclogo}
+\newlength{\doclogow}
+\setlength{\doclogow}{2.7cm}
+\newcommand*{\docCheckLogo}{%
+  \ifdefempty{\docLogo}{\boolfalse{doclogo}}{%
+    \IfFileExists{\docLogo}{\booltrue{doclogo}}{%
+      \boolfalse{doclogo}%
+      \PackageWarning{titre}{Logo introuvable : \docLogo}}}}
+
+% Élément « étiquette valeur » de la ligne d'informations (omis si vide)
+\newcounter{docmetaN}
+% Séparateur « | » gris entre deux éléments de la ligne d'informations. Il n'est
+% coupable d'aucune coupure disgracieuse : si la ligne passe à la ligne suivante
+% à cet endroit, la barre disparaît (discrétionnaire) au lieu de rester isolée.
+\newsavebox{\docbarbox}
+\AtBeginDocument{\sbox{\docbarbox}{\textcolor{RuleColor}{|}}}
+\newcommand*{\docsep}{\nobreak\hspace{0.8em}\discretionary{}{}{\copy\docbarbox}\nobreak\hspace{0.8em}}
+\makeatletter
+\newcommand*{\docitem}[2]{%
+  \protected@xdef\docmeta@val{#2}%
+  \ifdefempty{\docmeta@val}{}{%
+    \ifnum\value{docmetaN}>0 \docsep\fi
+    \stepcounter{docmetaN}%
+    {\sffamily\footnotesize\color{MutedColor}#1}\hspace{0.45em}\docmeta@val}}
+% même chose en tableau (page de titre complète)
+\newcommand*{\docrow}[2]{%
+  \protected@xdef\docmeta@val{#2}%
+  \ifdefempty{\docmeta@val}{}{%
+    {\sffamily\footnotesize\scshape\color{MutedColor}#1}&\docmeta@val\\}}
+\makeatother
+
+% Étiquette du numéro : « TP n° », « Simulation n° », « N° »
+\newcommand*{\docNumeroLabel}{%
+  \ifdoctype{tp}{TP n\textsuperscript{o}}
+    {\ifdoctype{simulation}{Simulation n\textsuperscript{o}}{N\textsuperscript{o}}}}
+
+\newcommand*{\docmetaline}{%
+  \setcounter{docmetaN}{0}%
+  \docitem{\docNumeroLabel}{\docNumero}%
+  \docitem{Étudiant\ifdoctype{tp}{(e)}{}}{\docEtudiant}%
+  \ifdoctype{tp}{\docitem{Binôme}{\docBinome}\docitem{Groupe}{\docGroupe}}{}%
+  \docitem{Enseignant}{\docEnseignant}%
+  \ifdoctype{tp}{\docitem{Séance}{\docSeance}}{}%
+  \docitem{Date}{\docDate}}
+
+\newcommand*{\docmetatable}{%
+  \begingroup\renewcommand{\arraystretch}{1.3}%
+  \begin{tabular}{@{}r@{\hspace{1.1em}}l@{}}
+    \docrow{\docNumeroLabel}{\docNumero}%
+    \docrow{Étudiant\ifdoctype{tp}{(e)}{}}{\docEtudiant}%
+    \ifdoctype{tp}{\docrow{Binôme}{\docBinome}\docrow{Groupe}{\docGroupe}}{}%
+    \docrow{Enseignant}{\docEnseignant}%
+    \ifdoctype{tp}{\docrow{Séance}{\docSeance}}{}%
+    \docrow{Date}{\docDate}%
+  \end{tabular}\endgroup}
+
+%% ---------------------------------------------------------------------
+%%  Bandeau : [LOGO à gauche] [bloc gauche]            [bloc droit]
+%%  Les deux blocs de texte sont construits à l'identique (3 lignes de
+%%  même corps, mêmes interlignes) et centrés verticalement sur le logo :
+%%  leurs lignes sont donc exactement au même niveau, à gauche (texte
+%%  aligné à gauche) et à droite (texte aligné à droite).
+%% ---------------------------------------------------------------------
+\newcommand*{\docFacDept}{%
+  \docFaculte\ifdefempty{\docDepartement}{}{\ifdefempty{\docFaculte}{}{\ \textperiodcentered\ }\docDepartement}}
+
+\newcommand*{\docLeftBlock}{%
+  \begingroup\renewcommand{\arraystretch}{1.1}%
+  \begin{tabular}[c]{@{}l@{}}
+    {\sffamily\small\bfseries\scshape\color{TextColor}\docUniversite\strut}\\
+    {\sffamily\footnotesize\color{MutedColor}\docFacDept\strut}\\
+    {\sffamily\footnotesize\color{MutedColor}\docFiliere\strut}
+  \end{tabular}\endgroup}
+
+\newcommand*{\docRightBlock}{%
+  \begingroup\renewcommand{\arraystretch}{1.1}%
+  \begin{tabular}[c]{@{}r@{}}
+    {\sffamily\small\bfseries\scshape\color{TextColor}\docTypeName\strut}\\
+    {\sffamily\footnotesize\color{MutedColor}\docCours\strut}\\
+    {\sffamily\footnotesize\color{MutedColor}\docAnnee\strut}
+  \end{tabular}\endgroup}
+
+\newcommand*{\docHeaderBand}{%
+  \docCheckLogo
+  \noindent
+  \ifbool{doclogo}
+    {\parbox[c]{\doclogow}{\includegraphics[width=\doclogow]{\docLogo}}\hspace{1.2em}}{}%
+  \docLeftBlock\hfill\docRightBlock\par}
+
+% Filet bleu marine (couleur du logo) sous le bandeau.
+\newcommand*{\docTopRule}{%
+  {\color{AccentColor}\rule{\linewidth}{0.8pt}}\par}
+
+%% ---------------------------------------------------------------------
+%%  Bloc de titre compact : bandeau, filet, titre, sous-titre, informations
+%% ---------------------------------------------------------------------
+\newcommand*{\docTitleBlock}{%
+  \thispagestyle{plain.scrheadings}%
+  \begingroup
+  \docHeaderBand
+  \vspace{0.7em}\docTopRule\vspace{0.9em}
+  \raggedright
+  {\fontsize{20}{24}\selectfont\bfseries\color{TextColor}\docTitre\par}
+  \ifdefempty{\docSousTitre}{}{\vspace{0.25em}{\large\itshape\color{MutedColor}\docSousTitre\par}}
+  \vspace{0.7em}
+  {\docmetaline\par}
+  \vspace{0.5em}{\color{RuleColor}\rule{\linewidth}{0.4pt}}\par\vspace{0.9em}
+  \endgroup}
+
+%% ---------------------------------------------------------------------
+%%  Page de titre complète (titlestyle = page)
+%% ---------------------------------------------------------------------
+\newcommand*{\docTitlePage}{%
+  \begin{titlepage}\thispagestyle{empty}\raggedright
+  \setlength{\doclogow}{3.4cm}%
+  \docHeaderBand
+  \vspace{0.8em}\docTopRule
+  \vfill
+  {\sffamily\small\bfseries\scshape\color{TextColor}\docTypeName%
+   \ifdefempty{\docCours}{}{\ \textperiodcentered\ \docCours}\par}\vspace{0.8em}
+  {\fontsize{30}{35}\selectfont\bfseries\color{TextColor}\docTitre\par}
+  \ifdefempty{\docSousTitre}{}{\vspace{0.6em}{\Large\itshape\color{MutedColor}\docSousTitre\par}}
+  \vspace{1.2em}{\color{RuleColor}\rule{0.3\linewidth}{0.8pt}}
+  \vfill
+  \docmetatable
+  \ifdefempty{\docAnnee}{}{\par\vspace{0.4em}{\sffamily\footnotesize\color{MutedColor}\docAnnee}}
+  \par\vspace{1.2em}{\color{AccentColor}\rule{\linewidth}{0.8pt}}
+  \end{titlepage}}
+
+% À placer juste après \begin{document}
+\newcommand*{\MakeDocTitle}{%
+  \ifdefstring{\docTitleStyle}{page}{\docTitlePage}{\docTitleBlock}}
+
+%% ---------------------------------------------------------------------
+%%  Filigrane « BROUILLON » (clé brouillon = true) et métadonnées PDF
+%% ---------------------------------------------------------------------
+\AtBeginDocument{%
+  \hypersetup{pdftitle={\docTitre}, pdfauthor={\docEtudiant}, pdfsubject={\docCours}}%
+  \ifdefstring{\docDraft}{true}{%
+    \AddToHook{shipout/background}{%
+      \put(0.5\paperwidth,-0.5\paperheight){\makebox(0,0){%
+        \rotatebox{52}{\fontsize{96}{96}\selectfont\sffamily\bfseries
+          \color[gray]{0.9}BROUILLON}}}}}{}}
