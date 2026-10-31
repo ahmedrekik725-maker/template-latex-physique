@@ -4,6 +4,25 @@ A4, 11 pt, français. Polices **Libertinus** réglées pour LuaLaTeX (gras Semib
 aucune couleur de thème. LuaLaTeX + Biber, géré automatiquement.
 Un aide-mémoire d'une page de toutes les commandes : **`aide-memoire.pdf`**.
 
+> **English summary.** A LaTeX template (LuaLaTeX + Biber, A4, 11 pt, French by default) for physics
+> **assignments**, **lab reports** and **numerical-simulation reports** (Python → CSV → PDF),
+> with Libertinus fonts, a consistent title banner, theorem/exercise environments and one-command
+> compilation (`latexmk`). Pick a template below, edit the `\docsetup{…}` block, press compile.
+> Licensed under MIT (the faculty logo is excluded, see `LICENSE`). If you use it, please cite it
+> (see `CITATION.cff`).
+
+## Aperçu / Preview
+
+| Devoir / Assignment | Compte rendu de TP / Lab report | Simulation |
+|:---:|:---:|:---:|
+| [![Devoir](docs/preview-exemple-A-assignment.png)](exemple-A-assignment.pdf) | [![TP](docs/preview-exemple-B-tp.png)](exemple-B-tp.pdf) | [![Simulation](docs/preview-exemple-C-simulation.png)](exemple-C-simulation.pdf) |
+
+PDF complets : [`exemple-A-assignment.pdf`](exemple-A-assignment.pdf) ·
+[`exemple-B-tp.pdf`](exemple-B-tp.pdf) · [`exemple-C-simulation.pdf`](exemple-C-simulation.pdf) ·
+[`aide-memoire.pdf`](aide-memoire.pdf)
+
+**Prérequis / Requirements :** MiKTeX or TeX Live (LuaLaTeX, Biber, latexmk), fonts *Libertinus*, Python 3 (simulation example only).
+
 ---
 
 ## 1. Ce que je fais, concrètement

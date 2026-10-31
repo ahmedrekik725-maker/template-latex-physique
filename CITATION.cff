@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "If you use this template, please cite it as below."
+title: "LaTeX template for physics assignments, lab reports and numerical simulations"
+type: software
+authors:
+  - family-names: Rekik
+    given-names: Ahmed
+    affiliation: "Faculty of Sciences of Tunis, University of Tunis El Manar"
+repository-code: "https://github.com/ahmedrekik725-maker/template-latex-physique"
+license: MIT
+keywords:
+  - LaTeX
+  - LuaLaTeX
+  - physics
+  - template
+  - lab report
+  - numerical simulation
+date-released: "2026-10-31"
